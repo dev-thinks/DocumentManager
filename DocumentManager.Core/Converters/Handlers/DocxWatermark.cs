@@ -4,8 +4,8 @@ using DocumentFormat.OpenXml.Vml;
 using DocumentFormat.OpenXml.Vml.Office;
 using DocumentFormat.OpenXml.Vml.Wordprocessing;
 using DocumentFormat.OpenXml.Wordprocessing;
+using DocumentManager.Core.Models;
 using Microsoft.Extensions.Logging;
-using System;
 using System.IO;
 using System.Linq;
 using HorizontalAnchorValues = DocumentFormat.OpenXml.Vml.Wordprocessing.HorizontalAnchorValues;
@@ -17,21 +17,34 @@ namespace DocumentManager.Core.Converters.Handlers
     public class DocxWatermark
     {
         private readonly ILogger _logger;
-        private readonly string _draftImagePath;
+        private readonly WaterMarkOptions _options;
         private readonly MemoryStream _docxMs;
 
-        public DocxWatermark(ILogger logger, string docXTemplateFilename, string draftImagePath = "")
+        public DocxWatermark(string filePath, ILogger logger, WaterMarkOptions options = null)
         {
             _logger = logger;
-            _draftImagePath = draftImagePath;
-            _docxMs = StreamHandler.GetFileAsMemoryStream(docXTemplateFilename);
+            _options = options;
+            _docxMs = StreamHandler.GetFileAsMemoryStream(filePath);
+
+            if (options == null)
+            {
+                _options = new WaterMarkOptions();
+            }
         }
 
-        public MemoryStream Do()
+        public MemoryStream Do(string waterMarkImagePath = "")
         {
             using (WordprocessingDocument doc = WordprocessingDocument.Open(_docxMs, true))
             {
-                AddWatermarkText(doc);
+                if (string.IsNullOrEmpty(waterMarkImagePath))
+                {
+                    AddWatermarkText(doc);
+                }
+                else
+                {
+                    _logger.LogTrace("Adding image watermark using: {WaterMarkImage}", waterMarkImagePath);
+                    // TODO: Image watermark
+                }
             }
 
             _docxMs.Position = 0;
@@ -39,7 +52,19 @@ namespace DocumentManager.Core.Converters.Handlers
             return _docxMs;
         }
 
-        private static void AddWatermarkText(WordprocessingDocument doc)
+        public MemoryStream Remove(string waterMarkId)
+        {
+            using (WordprocessingDocument doc = WordprocessingDocument.Open(_docxMs, true))
+            {
+                RemoveWatermark(doc);
+            }
+
+            _docxMs.Position = 0;
+
+            return _docxMs;
+        }
+
+        private void AddWatermarkText(WordprocessingDocument doc)
         {
             if (!doc.MainDocumentPart.HeaderParts.Any())
             {
@@ -149,7 +174,7 @@ namespace DocumentManager.Core.Converters.Handlers
                 var shapeHandles = new ShapeHandles();
                 var shapeHandle = new ShapeHandle
                 {
-                    Position = "#0,bottomRight",
+                    Position = $"#0,{_options.Position}",
                     XRange = "6629,14971"
                 };
 
@@ -171,20 +196,19 @@ namespace DocumentManager.Core.Converters.Handlers
                 var vmlShape = new Shape()
                 {
                     Id = "PowerPlusWaterMarkObject357476642",
-                    Style =
-                        "position:absolute;left:0;text-align:left;margin-left:0;margin-top:0;width:527.85pt;height:131.95pt;rotation:315;z-index:-251656192;mso-position-horizontal:center;mso-position-horizontal-relative:margin;mso-position-vertical:center;mso-position-vertical-relative:margin",
+                    Style = _options.ElementStyle,
                     OptionalString = "_x0000_s2049",
                     AllowInCell = DocumentFormat.OpenXml.TrueFalseValue.FromBoolean(true),
-                    FillColor = "silver",
+                    FillColor = _options.ElementColor,
                     Stroked = DocumentFormat.OpenXml.TrueFalseValue.FromBoolean(true),
                     Type = "#_x0000_t136"
                 };
 
-                var vmlFill = new Fill() {Opacity = ".5"};
+                var vmlFill = new Fill() {Opacity = _options.Opacity};
                 var fonTextPath = new TextPath()
                 {
-                    Style = "font-family:\"Calibri\";font-size:1pt",
-                    String = "DRAFT"
+                    Style = _options.ElementFontFamily,
+                    String = _options.Text
                 };
 
                 var textWrap = new TextWrap()
@@ -214,7 +238,7 @@ namespace DocumentManager.Core.Converters.Handlers
             }
         }
 
-        private static Header MakeHeader()
+        private Header MakeHeader()
         {
             var header = new Header();
             var paragraph = new Paragraph();
@@ -307,7 +331,6 @@ namespace DocumentManager.Core.Converters.Handlers
         {
             return new System.IO.MemoryStream(System.Convert.FromBase64String(base64String));
         }
-        */
 
         private static void DeleteCustomWatermark(WordprocessingDocument package, string watermarkId)
         {
@@ -329,6 +352,61 @@ namespace DocumentManager.Core.Converters.Handlers
                     }
                 }
             }
+        }
+        */
+
+        /// <summary>
+        /// Remove Watermark
+        /// </summary>
+        /// <param name="doc"></param>
+        void RemoveWatermark(WordprocessingDocument doc)
+        {
+            foreach (var header in doc.MainDocumentPart.HeaderParts)
+            {
+                //Remove
+                if (header.Header.Descendants<Paragraph>() != null)
+                {
+                    var isFound = false;
+                    foreach (var para in header.Header.Descendants<Paragraph>())
+                    {
+                        foreach (Run r in para.Descendants<Run>())
+                        {
+                            isFound = FindAndRemoveWatermark(r);
+                            if (isFound)
+                                break;
+                        }
+                        if (isFound)
+                            header.Header.Save(header);
+                    }
+                }
+            }
+        }
+
+        bool FindAndRemoveWatermark(Run runWatermark)
+        {
+            bool success = false;
+            //DocumentFormat.OpenXml.Vml.TextPath
+            //Check, if run contains watermark
+            if (runWatermark.Descendants<Picture>() != null)
+            {
+                var listPic = runWatermark.Descendants<Picture>().ToList();
+
+                for (int n = listPic.Count; n > 0; n--)
+                {
+                    if (listPic[n - 1].Descendants<Shape>() != null)
+                    {
+                        if (listPic[n - 1].Descendants<Shape>().Count(s => s.Type == "#_x0000_t136") > 0)
+                        {
+                            //Found -> remove
+                            listPic[n - 1].Remove();
+                            success = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return success;
         }
     }
 }

@@ -24,10 +24,15 @@ namespace DocumentManager.Core.Converters
 
             StreamHandler.WriteMemoryStreamToDisk(ms, target);
 
-            var watermark = new DocxWatermark(_logger, target);
+            var watermark = new DocxWatermark(target, _logger);
             var ws = watermark.Do();
 
             StreamHandler.WriteMemoryStreamToDisk(ws, target);
+
+            var noWaterMark = new DocxWatermark(target, _logger);
+            var woWaterMark = noWaterMark.Remove("CONFIDENTIAL");
+
+            StreamHandler.WriteMemoryStreamToDisk(woWaterMark, "nowatermark.docx");
         }
 
         public MemoryStream Merge(string source, Placeholders rep)
