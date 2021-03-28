@@ -17,9 +17,8 @@ namespace DocumentManager.Core.Converters.Handlers
         {
             ms.Position = 0;
 
-            using (FileStream file = new FileStream(filename, FileMode.Create, System.IO.FileAccess.Write))
-                ms.CopyTo(file);
+            using FileStream file = new FileStream(filename, FileMode.Create, FileAccess.Write);
+            ms.CopyTo(file);
         }
-
     }
 }

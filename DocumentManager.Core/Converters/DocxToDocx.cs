@@ -27,7 +27,7 @@ namespace DocumentManager.Core.Converters
             var watermark = new DocxWatermark(_logger, target);
             var ws = watermark.Do();
 
-            StreamHandler.WriteMemoryStreamToDisk(ws, "test.docx");
+            StreamHandler.WriteMemoryStreamToDisk(ws, target);
         }
 
         public MemoryStream Merge(string source, Placeholders rep)
