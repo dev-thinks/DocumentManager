@@ -31,9 +31,12 @@ namespace DocumentManager.Core.Converters.Handlers
             {
                 MergeTextFieldCode();
 
-                //ReplaceHyperlinks();
+                MergeHyperlinks();
 
-                MergeTableFieldCode();
+                if (_rep.TablePlaceholders?.Count > 0)
+                {
+                    MergeTableFieldCode();
+                }
 
                 //ReplaceImages();
             }
@@ -176,77 +179,56 @@ namespace DocumentManager.Core.Converters.Handlers
                 CleanMarkup(doc);
 
                 // Search in body, headers and footers
-                var documentTexts = doc.MainDocumentPart.Document.Descendants<Text>();
+                var linkMergeFields = doc.MainDocumentPart.Document.Descendants<FieldCode>();
 
-                foreach (var text in documentTexts)
+                foreach (var linkMergeField in linkMergeFields)
                 {
                     foreach (var replace in _rep.HyperlinkPlaceholders)
                     {
-                        var pl = _rep.HyperlinkPlaceholderStartTag + replace.Key + _rep.HyperlinkPlaceholderEndTag;
-                        if (text.Text.Contains(pl))
+                        var pl =  replace.Key ;
+                        if (linkMergeField.Text.Contains(pl))
                         {
-                            var run = text.Ancestors<Run>().First();
+                            Run rFldCode = linkMergeField.Parent as Run;
+                            Run rBegin = rFldCode?.PreviousSibling<Run>();
+                            Run rSep = rFldCode?.NextSibling<Run>();
 
-                            if (text.Text.StartsWith(pl))
+                            Run rText = rSep?.NextSibling<Run>();
+                            Run rEnd = rText?.NextSibling<Run>();
+
+                            rFldCode?.Remove();
+                            rBegin?.Remove();
+                            rSep?.Remove();
+                            rEnd?.Remove();
+
+                            var run = rText;
+                            Text t = rText?.GetFirstChild<Text>();
+
+                            if (t != null)
                             {
-                                var newAfterRun = (Run)run.Clone();
-                                string afterText = text.Text.Substring(pl.Length, text.Text.Length - pl.Length);
-                                Text newAfterRunText = newAfterRun.GetFirstChild<Text>();
-                                newAfterRunText.Space = SpaceProcessingModeValues.Preserve;
-                                newAfterRunText.Text = afterText;
-
-                                run.Parent.InsertAfter(newAfterRun, run);
-                            }
-                            else if (text.Text.EndsWith(pl))
-                            {
-                                var newBeforeRun = (Run)run.Clone();
-                                string beforeText = text.Text.Substring(0, text.Text.Length - pl.Length);
-                                Text newBeforeRunText = newBeforeRun.GetFirstChild<Text>();
-                                newBeforeRunText.Space = SpaceProcessingModeValues.Preserve;
-                                newBeforeRunText.Text = beforeText;
-
-                                run.Parent.InsertBefore(newBeforeRun, run);
-                            }
-                            else
-                            {
-                                //Break the texts into the part before and after image. Then create separate runs for them
-                                var pos = text.Text.IndexOf(pl, StringComparison.CurrentCulture);
-
-                                var newBeforeRun = (Run)run.Clone();
-                                string beforeText = text.Text.Substring(0, pos);
-                                Text newBeforeRunText = newBeforeRun.GetFirstChild<Text>();
-                                newBeforeRunText.Space = SpaceProcessingModeValues.Preserve;
-                                newBeforeRunText.Text = beforeText;
-                                run.Parent.InsertBefore(newBeforeRun, run);
-
-                                var newAfterRun = (Run)run.Clone();
-                                string afterText =
-                                    text.Text.Substring(pos + pl.Length, text.Text.Length - pos - pl.Length);
-                                Text newAfterRunText = newAfterRun.GetFirstChild<Text>();
-                                newAfterRunText.Space = SpaceProcessingModeValues.Preserve;
-                                newAfterRunText.Text = afterText;
-                                run.Parent.InsertAfter(newAfterRun, run);
+                                t.Text = string.Empty;
                             }
 
                             var relation =
                                 doc.MainDocumentPart.AddHyperlinkRelationship(
                                     new Uri(replace.Value.Link, UriKind.RelativeOrAbsolute), true);
-                            string relationid = relation.Id;
+
+                            string relationId = relation.Id;
                             var linkText = string.IsNullOrEmpty(replace.Value.Text)
                                 ? replace.Value.Link
                                 : replace.Value.Text;
+
                             var hyper =
                                 new Hyperlink(
                                     new Run(
                                         new RunProperties(new RunStyle() { Val = "Hyperlink" }),
                                         new Text(linkText)))
                                 {
-                                    Id = relationid,
+                                    Id = relationId,
                                     History = OnOffValue.FromBoolean(true)
                                 };
 
-                            run.Parent.InsertBefore(hyper, run);
-                            run.Remove();
+                            run?.Parent.InsertBefore(hyper, run);
+                            // run.Remove();
                         }
                     }
                 }

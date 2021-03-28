@@ -1,11 +1,10 @@
 ﻿using DocumentManager.Core;
 using DocumentManager.Core.Converters;
-using DocumentManager.Tests.Table;
+using DocumentManager.Tests.HyperLinks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Threading.Tasks;
 
 namespace DocumentManager.Tests
 {
@@ -17,7 +16,9 @@ namespace DocumentManager.Tests
 
             Console.WriteLine("Hello World!");
 
-            TableMerge.PerformTest(host.Services);
+            // TableMerge.PerformTest(host.Services);
+
+            LinkMerge.PerformTest(host.Services);
 
             Console.WriteLine("Completed.");
         }

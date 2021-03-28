@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="HyperLinks\" />
     <Folder Include="Simple\" />
   </ItemGroup>
 
@@ -19,6 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="HyperLinks\CartReport.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Table\Invoice.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
