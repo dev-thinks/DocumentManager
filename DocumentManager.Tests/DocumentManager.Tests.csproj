@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="HyperLinks\" />
     <Folder Include="Simple\" />
   </ItemGroup>
 
