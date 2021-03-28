@@ -34,13 +34,6 @@ namespace DocumentManager.Core.Converters.Handlers
             }
         }
 
-
-
-        //libreOfficePath for Windows: e. g. "C:\\program\\soffice.exe
-
-
-        //With Portable Apps it is here: C:\PortableApps\LibreOfficePortable\App\libreoffice\program\soffice.exe
-
         public static void Convert(string inputFile, string outputFile, string libreOfficePath)
         {
             var commandArgs = new List<string>();

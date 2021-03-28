@@ -16,7 +16,11 @@ namespace DocumentManager.Core.Converters
 
         public void Do(string source, string target, Placeholders rep)
         {
+            _logger.LogTrace("Start processing docx to docx transformation");
+
             var ms = Merge(source, rep);
+
+            _logger.LogTrace("Docx to docx Transformation done");
 
             StreamHandler.WriteMemoryStreamToDisk(ms, target);
         }

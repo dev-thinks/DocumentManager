@@ -1,4 +1,5 @@
-﻿using DocumentManager.Core.Models;
+﻿using DocumentManager.Core.Converters;
+using DocumentManager.Core.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -7,11 +8,13 @@ namespace DocumentManager.Core
     public class Executor
     {
         private readonly IConfiguration _config;
+        private readonly DocxToDocx _toDocx;
         private readonly ILogger<Executor> _logger;
 
-        public Executor(IConfiguration config, ILogger<Executor> logger)
+        public Executor(IConfiguration config, DocxToDocx toDocx, ILogger<Executor> logger)
         {
             _config = config;
+            _toDocx = toDocx;
             _logger = logger;
         }
 
@@ -21,7 +24,7 @@ namespace DocumentManager.Core
             {
                 if (outputFile.EndsWith(".docx"))
                 {
-                    
+                    _toDocx.Do(inputFile, outputFile, rep);
                 }
                 else if (outputFile.EndsWith(".pdf"))
                 {

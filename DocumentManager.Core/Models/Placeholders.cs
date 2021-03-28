@@ -20,7 +20,7 @@ namespace DocumentManager.Core.Models
             HyperlinkPlaceholderEndTag = "//";
 
             TextPlaceholders = new Dictionary<string, string>();
-            TablePlaceholders = new List<Dictionary<string, string[]>>();
+            TablePlaceholders = new List<TableElement>();
             ImagePlaceholders = new Dictionary<string, ImageElement>();
             HyperlinkPlaceholders = new Dictionary<string, HyperlinkElement>();
         }
@@ -50,7 +50,7 @@ namespace DocumentManager.Core.Models
 
         public string TablePlaceholderEndTag { get; set; }
 
-        public List<Dictionary<string, string[]>> TablePlaceholders { get; set; }
+        public List<TableElement> TablePlaceholders { get; set; }
 
         /// <summary>
         /// Important: The MemoryStream may carry an image. Allowed file types: JPEG/JPG, BMP, TIFF, GIF, PNG

@@ -66,6 +66,8 @@ namespace DocumentManager.Core.MailMerge
                 .Where(f => f.InnerText.StartsWith(GetMergeFieldStartString(mergeFieldName)));
         }
 
+        
+
         /// <summary>
         /// Filters merge fields by the given name.
         /// </summary>
@@ -197,9 +199,9 @@ namespace DocumentManager.Core.MailMerge
             }
         }
 
-        private static string GetMergeFieldStartString(string mergeFieldName)
+        public static string GetMergeFieldStartString(string mergeFieldName)
         {
-            return $" MERGEFIELD  {(!string.IsNullOrWhiteSpace(mergeFieldName) ? mergeFieldName : "<NoNameMergeField>")}";
+            return $" MERGEFIELD  {(!string.IsNullOrEmpty(mergeFieldName) ? mergeFieldName : "<NoNameMergeField>")}";
         }
     }
 }
