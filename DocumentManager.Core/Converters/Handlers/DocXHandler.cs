@@ -1,13 +1,13 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using DocumentManager.Core.MailMerge;
 using DocumentManager.Core.Models;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DocumentFormat.OpenXml;
 
 namespace DocumentManager.Core.Converters.Handlers
 {

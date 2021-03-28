@@ -23,6 +23,11 @@ namespace DocumentManager.Core.Converters
             _logger.LogTrace("Docx to docx Transformation done");
 
             StreamHandler.WriteMemoryStreamToDisk(ms, target);
+
+            var watermark = new DocxWatermark(_logger, target);
+            var ws = watermark.Do();
+
+            StreamHandler.WriteMemoryStreamToDisk(ws, "test.docx");
         }
 
         public MemoryStream Merge(string source, Placeholders rep)
