@@ -28,7 +28,7 @@ namespace DocumentManager.Core.Converters
 
             _logger.LogTrace("Docx to docx Transformation done");
 
-            StreamHandler.WriteMemoryStreamToDisk(ms, target);
+            Extensions.WriteMemoryStreamToDisk(ms, target);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace DocumentManager.Core.Converters
             var watermark = new DocxWatermark(source, _logger);
             var ws = watermark.Do();
 
-            StreamHandler.WriteMemoryStreamToDisk(ws, target);
+            Extensions.WriteMemoryStreamToDisk(ws, target);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace DocumentManager.Core.Converters
             var noWaterMark = new DocxWatermark(source, _logger);
             var woWaterMark = noWaterMark.Remove();
 
-            StreamHandler.WriteMemoryStreamToDisk(woWaterMark, target);
+            Extensions.WriteMemoryStreamToDisk(woWaterMark, target);
         }
     }
 }

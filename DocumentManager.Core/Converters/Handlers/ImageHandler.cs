@@ -1,92 +1,111 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using DocumentManager.Core.Models;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
+using System.Collections.Generic;
+using System.IO.Packaging;
+using A = DocumentFormat.OpenXml.Drawing;
+using DW = DocumentFormat.OpenXml.Drawing.Wordprocessing;
+using PIC = DocumentFormat.OpenXml.Drawing.Pictures;
 
 namespace DocumentManager.Core.Converters.Handlers
 {
-    public static class ImageHandler
+    public class ImageHandler
     {
+        private readonly ILogger _logger;
 
-        public static Image GetImage(this MemoryStream ms)
+        public ImageHandler(ILogger logger)
         {
-            ms.Position = 0;
-            var image = Image.FromStream(ms);
-            ms.Position = 0;
-            return image;
+            _logger = logger;
         }
 
-        public static ImagePartType GetImagePartType(this MemoryStream stream)
+        public void AppendImageToElement(KeyValuePair<string, ImageElement> placeholder, OpenXmlElement element,
+            WordprocessingDocument wordprocessingDocument, int imageCounter)
         {
-            stream.Position = 0;
-            using (var image = Image.FromStream(stream))
-            {
-                stream.Position = 0;
+            string imageExtension = placeholder.Value.MemStream.GetImageType();
 
-                if (ImageFormat.Jpeg.Equals(image.RawFormat))
-                {
-                    return ImagePartType.Jpeg;
-                }
-                else if (ImageFormat.Png.Equals(image.RawFormat))
-                {
-                    return ImagePartType.Png;
-                }
-                else if (ImageFormat.Gif.Equals(image.RawFormat))
-                {
-                    return ImagePartType.Gif;
-                }
-                else if (ImageFormat.Bmp.Equals(image.RawFormat))
-                {
-                    return ImagePartType.Bmp;
-                }
-                else if (ImageFormat.Tiff.Equals(image.RawFormat))
-                {
-                    return ImagePartType.Tiff;
-                }
+            MainDocumentPart mainPart = wordprocessingDocument.MainDocumentPart;
 
-                return ImagePartType.Jpeg;
-            }
+            var imageUri = new Uri($"/word/media/{placeholder.Key}{imageCounter}.{imageExtension}", UriKind.Relative);
+
+            // Create "image" part in /word/media
+            // Change content type for other image types.
+            PackagePart packageImagePart =
+                wordprocessingDocument.Package.CreatePart(imageUri, "Image/" + imageExtension);
+
+            // Feed data.
+            placeholder.Value.MemStream.Position = 0;
+            byte[] imageBytes = placeholder.Value.MemStream.ToArray();
+            packageImagePart.GetStream().Write(imageBytes, 0, imageBytes.Length);
+
+            PackagePart documentPackagePart =
+                mainPart.OpenXmlPackage.Package.GetPart(new Uri("/word/document.xml", UriKind.Relative));
+
+            // URI to the image is relative to relationship document.
+            PackageRelationship imageRelationshipPart = documentPackagePart.CreateRelationship(
+                new Uri("media/" + placeholder.Key + imageCounter + "." + imageExtension, UriKind.Relative),
+                TargetMode.Internal, "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
+
+            var imgTmp = placeholder.Value.MemStream.GetImage();
+
+            var drawing = GetImageElement(imageRelationshipPart.Id, placeholder.Key, "picture", imgTmp.Width,
+                imgTmp.Height, placeholder.Value.Dpi, imageCounter);
+            element.AppendChild(drawing);
         }
 
-        public static string GetImageType(this MemoryStream stream)
+        private Drawing GetImageElement(string imagePartId, string fileName, string pictureName,
+            double width, double height, double ppi, int imageCounter)
         {
-            stream.Position = 0;
-            using (var image = Image.FromStream(stream))
-            {
-                stream.Position = 0;
+            double englishMetricUnitsPerInch = 914400;
+            double pixelsPerInch = ppi;
 
-                if (ImageFormat.Jpeg.Equals(image.RawFormat))
-                {
-                    return "jpeg";
-                }
-                else if (ImageFormat.Png.Equals(image.RawFormat))
-                {
-                    return "png";
-                }
-                else if (ImageFormat.Gif.Equals(image.RawFormat))
-                {
-                    return "gif";
-                }
-                else if (ImageFormat.Bmp.Equals(image.RawFormat))
-                {
-                    return "bmp";
-                }
-                else if (ImageFormat.Tiff.Equals(image.RawFormat))
-                {
-                    return "tiff";
-                }
+            //calculate size in emu
+            double emuWidth = width * englishMetricUnitsPerInch / pixelsPerInch;
+            double emuHeight = height * englishMetricUnitsPerInch / pixelsPerInch;
 
-                return "";
-            }
-        }
+            var element = new Drawing(
+                new DW.Inline(
+                    new DW.Extent {Cx = (Int64Value) emuWidth, Cy = (Int64Value) emuHeight},
+                    new DW.EffectExtent {LeftEdge = 0L, TopEdge = 0L, RightEdge = 0L, BottomEdge = 0L},
+                    new DW.DocProperties {Id = (UInt32Value) 1U, Name = pictureName + imageCounter},
+                    new DW.NonVisualGraphicFrameDrawingProperties(
+                        new A.GraphicFrameLocks {NoChangeAspect = true}),
+                    new A.Graphic(
+                        new A.GraphicData(
+                            new PIC.Picture(
+                                new PIC.NonVisualPictureProperties(
+                                    new PIC.NonVisualDrawingProperties {Id = (UInt32Value) 0U, Name = fileName},
+                                    new PIC.NonVisualPictureDrawingProperties()),
+                                new PIC.BlipFill(
+                                    new A.Blip(
+                                        new A.BlipExtensionList(
+                                            new A.BlipExtension {Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}"}))
+                                    {
+                                        Embed = imagePartId,
+                                        CompressionState = A.BlipCompressionValues.Print
+                                    },
+                                    new A.Stretch(new A.FillRectangle())),
+                                new PIC.ShapeProperties(
+                                    new A.Transform2D(
+                                        new A.Offset {X = 0L, Y = 0L},
+                                        new A.Extents {Cx = (Int64Value) emuWidth, Cy = (Int64Value) emuHeight}),
+                                    new A.PresetGeometry(
+                                            new A.AdjustValueList())
+                                        {Preset = A.ShapeTypeValues.Rectangle})))
+                        {
+                            Uri = "http://schemas.openxmlformats.org/drawingml/2006/picture"
+                        }))
+                {
+                    DistanceFromTop = (UInt32Value) 0U,
+                    DistanceFromBottom = (UInt32Value) 0U,
+                    DistanceFromLeft = (UInt32Value) 0U,
+                    DistanceFromRight = (UInt32Value) 0U,
+                    EditId = "50D07946"
+                });
 
-        public static string GetBase64(this MemoryStream stream)
-        {
-            byte[] imageBytes = stream.ToArray();
-
-            // Convert byte[] to Base64 String
-            return Convert.ToBase64String(imageBytes);
+            return element;
         }
     }
 }

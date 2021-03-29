@@ -26,7 +26,7 @@ namespace DocumentManager.Core.Converters.Handlers
         {
             _logger = logger;
             _options = options;
-            _docxMs = StreamHandler.GetFileAsMemoryStream(filePath);
+            _docxMs = Extensions.GetFileAsMemoryStream(filePath);
 
             if (options == null)
             {

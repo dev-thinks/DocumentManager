@@ -27,7 +27,7 @@ namespace DocumentManager.Core.Converters
             var tmpFile = Path.Combine(Path.GetDirectoryName(target),
                 $"{Path.GetFileNameWithoutExtension(target)}{Guid.NewGuid().ToString().Substring(0, 10)}.docx");
 
-            StreamHandler.WriteMemoryStreamToDisk(ms, tmpFile);
+            Extensions.WriteMemoryStreamToDisk(ms, tmpFile);
 
             try
             {

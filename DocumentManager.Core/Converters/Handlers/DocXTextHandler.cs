@@ -21,6 +21,7 @@ namespace DocumentManager.Core.Converters.Handlers
 {
     public partial class DocXHandler
     {
+        /*
         public MemoryStream ReplaceTexts()
         {
             if (_rep.TextPlaceholders == null || _rep.TextPlaceholders.Count == 0)
@@ -181,7 +182,7 @@ namespace DocumentManager.Core.Converters.Handlers
             return _docxMs;
         }
 
-        /*
+        
         public MemoryStream ReplaceTableRows()
         {
             if (_rep.TablePlaceholders == null || _rep.TablePlaceholders.Count == 0)
@@ -282,7 +283,7 @@ namespace DocumentManager.Core.Converters.Handlers
             _docxMs.Position = 0;
             return _docxMs;
         }
-        */
+        
 
         public MemoryStream ReplaceImages()
         {
@@ -447,10 +448,8 @@ namespace DocumentManager.Core.Converters.Handlers
 
             return element;
         }
+        */
 
-        private static void CleanMarkup(WordprocessingDocument doc)
-        {
-            
-        }
+        
     }
 }
