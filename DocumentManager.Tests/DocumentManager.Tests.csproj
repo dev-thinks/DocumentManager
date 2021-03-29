@@ -33,6 +33,9 @@
     <None Update="Pdf\PdfMergeTemplate.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Pdf\signature.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Table\Invoice.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

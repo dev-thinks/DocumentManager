@@ -27,6 +27,14 @@ namespace DocumentManager.Core.Converters
 
                 Extensions.WriteMemoryStreamToDisk(ms, tmpDocxFile);
 
+                // adds watermark if requested
+                if (rep.IsWaterMarkNeeded)
+                {
+                    var options = new WaterMarkOptions {Text = "SAMPLE" };
+
+                    _toDocx.AddWaterMark(tmpDocxFile, tmpDocxFile, options);
+                }
+
                 var openOffice = new OpenOfficeHandler(_logger, rep);
 
                 openOffice.Convert(tmpDocxFile, pdfTarget);
@@ -37,7 +45,7 @@ namespace DocumentManager.Core.Converters
             }
             finally
             {
-                Helper.ClearDirectory(rep.WorkingLocation);
+                //Helper.ClearDirectory(rep.WorkingLocation);
             }
         }
     }

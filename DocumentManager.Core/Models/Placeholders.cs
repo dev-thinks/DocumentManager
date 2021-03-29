@@ -14,6 +14,7 @@ namespace DocumentManager.Core.Models
             TablePlaceholders = new List<TableElement>();
             ImagePlaceholders = new Dictionary<string, ImageElement>();
             HyperlinkPlaceholders = new Dictionary<string, HyperlinkElement>();
+            IsWaterMarkNeeded = false;
         }
 
         /// <summary>
@@ -28,5 +29,7 @@ namespace DocumentManager.Core.Models
         public Dictionary<string, ImageElement> ImagePlaceholders { get; set; }
 
         public Dictionary<string, HyperlinkElement> HyperlinkPlaceholders { get; set; }
+
+        public bool IsWaterMarkNeeded { get; set; }
     }
 }

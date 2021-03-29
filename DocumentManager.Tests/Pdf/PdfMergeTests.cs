@@ -1,13 +1,19 @@
 ﻿using DocumentManager.Core;
+using DocumentManager.Core.Converters.Handlers;
 using DocumentManager.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 
 namespace DocumentManager.Tests.Pdf
 {
     public class PdfMergeTests
     {
+        static string executableLocation = Path.GetDirectoryName(
+            Assembly.GetExecutingAssembly().Location);
+
         public static void PerformTest(IServiceProvider services)
         {
             using IServiceScope serviceScope = services.CreateScope();
@@ -35,6 +41,17 @@ namespace DocumentManager.Tests.Pdf
                 },
                 TablePlaceholders = new List<TableElement> { table }
             };
+
+            var qrImage = Extensions.GetFileAsMemoryStream(Path.Combine(executableLocation, "Pdf\\signature.PNG"));
+
+            var qrImageElement = new ImageElement() { Dpi = 300, MemStream = qrImage };
+
+            placeholders.ImagePlaceholders = new Dictionary<string, ImageElement>
+            {
+                {"Signature", qrImageElement }
+            };
+
+            placeholders.IsWaterMarkNeeded = true;
 
             executor.Convert("Pdf\\PdfMergeTemplate.docx", "PdfMerge.pdf", placeholders);
         }
