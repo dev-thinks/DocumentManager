@@ -1,4 +1,4 @@
-﻿using DocumentManager.Core.Converters;
+﻿using DocumentManager.Core;
 using DocumentManager.Core.Converters.Handlers;
 using DocumentManager.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +19,7 @@ namespace DocumentManager.Tests.Image
             using IServiceScope serviceScope = services.CreateScope();
             IServiceProvider provider = serviceScope.ServiceProvider;
 
-            var docxToDocx = provider.GetRequiredService<DocxToDocx>();
+            var executor = provider.GetRequiredService<Executor>();
 
             var placeholders = new Placeholders
             {
@@ -44,7 +44,7 @@ namespace DocumentManager.Tests.Image
                 {"Signature", qrImageElement }
             };
 
-            docxToDocx.Do("Image\\ImageMergeTemplate.docx", "ImageMergeDocument.docx", placeholders);
+            executor.Convert("Image\\ImageMergeTemplate.docx", "ImageMergeDocument.docx", placeholders);
         }
     }
 }

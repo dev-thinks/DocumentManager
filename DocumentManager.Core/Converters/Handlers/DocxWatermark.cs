@@ -14,7 +14,7 @@ using VerticalAnchorValues = DocumentFormat.OpenXml.Vml.Wordprocessing.VerticalA
 
 namespace DocumentManager.Core.Converters.Handlers
 {
-    public class DocxWatermark
+    internal class DocxWatermark
     {
         private readonly ILogger _logger;
         private readonly WaterMarkOptions _options;
@@ -22,7 +22,7 @@ namespace DocumentManager.Core.Converters.Handlers
 
         private string WaterMarkTypeId => "#_x0000_t136";
 
-        public DocxWatermark(string filePath, ILogger logger, WaterMarkOptions options = null)
+        public DocxWatermark(string filePath, ILogger logger, WaterMarkOptions options)
         {
             _logger = logger;
             _options = options;
@@ -34,7 +34,7 @@ namespace DocumentManager.Core.Converters.Handlers
             }
         }
 
-        public MemoryStream Do(string waterMarkImagePath = "")
+        internal MemoryStream Do(string waterMarkImagePath = "")
         {
             using (WordprocessingDocument doc = WordprocessingDocument.Open(_docxMs, true))
             {
@@ -56,7 +56,7 @@ namespace DocumentManager.Core.Converters.Handlers
             return _docxMs;
         }
 
-        public MemoryStream Remove()
+        internal MemoryStream Remove()
         {
             using (WordprocessingDocument doc = WordprocessingDocument.Open(_docxMs, true))
             {

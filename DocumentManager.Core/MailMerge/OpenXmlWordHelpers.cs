@@ -9,7 +9,7 @@ namespace DocumentManager.Core.MailMerge
     /// <summary>
     /// Provides extension methods for working with OpenXml document, particularly Word.
     /// </summary>
-    public static class OpenXmlWordHelpers
+    internal static class OpenXmlWordHelpers
     {
         /// <summary>
         /// Gets merge fields contained in a document, including the header and footer sections. 
@@ -17,7 +17,7 @@ namespace DocumentManager.Core.MailMerge
         /// <param name="doc"></param>
         /// <param name="mergeFieldName">Optional name for the merge fields to look for.</param>
         /// <returns>If a merge field name is specified, only merge fields with that name are returned. Otherwise, it returns all merge fields contained in the document.</returns>
-        public static IEnumerable<FieldCode> GetMergeFields(this WordprocessingDocument doc, string mergeFieldName = null)
+        internal static IEnumerable<FieldCode> GetMergeFields(this WordprocessingDocument doc, string mergeFieldName = null)
         {
             if (doc == null)
             {
@@ -49,7 +49,7 @@ namespace DocumentManager.Core.MailMerge
         /// <param name="mergeFieldName">Optional name for the merge fields to look for..</param>
         /// <returns>If a merge field name is specified, only merge fields with that name are returned.
         /// Otherwise, it returns all merge fields contained in the given element.</returns>
-        public static IEnumerable<FieldCode> GetMergeFields(this OpenXmlElement xmlElement, string mergeFieldName = null)
+        internal static IEnumerable<FieldCode> GetMergeFields(this OpenXmlElement xmlElement, string mergeFieldName = null)
         {
             if (xmlElement == null)
             {
@@ -66,7 +66,7 @@ namespace DocumentManager.Core.MailMerge
                 .Where(f => f.InnerText.StartsWith(GetMergeFieldStartString(mergeFieldName)));
         }
 
-        
+
 
         /// <summary>
         /// Filters merge fields by the given name.
@@ -74,7 +74,7 @@ namespace DocumentManager.Core.MailMerge
         /// <param name="mergeFields"></param>
         /// <param name="mergeFieldName">The merge field name.</param>
         /// <returns>Returns all merge fields with the given name. If the merge field name is null or blank, it returns nothing.</returns>
-        public static IEnumerable<FieldCode> WhereNameIs(this IEnumerable<FieldCode> mergeFields, string mergeFieldName)
+        internal static IEnumerable<FieldCode> WhereNameIs(this IEnumerable<FieldCode> mergeFields, string mergeFieldName)
         {
             if (mergeFields == null || !mergeFields.Any())
             {
@@ -89,7 +89,7 @@ namespace DocumentManager.Core.MailMerge
         /// Gets the immediate containing paragraph of a given element.
         /// </summary>
         /// <returns>If the given element is a paragraph, that element is returned. Otherwise, it returns the immediate ancestor that is a paragraph, or null if none is found.</returns>
-        public static Paragraph GetParagraph(this OpenXmlElement xmlElement)
+        internal static Paragraph GetParagraph(this OpenXmlElement xmlElement)
         {
             if (xmlElement == null)
             {
@@ -119,7 +119,7 @@ namespace DocumentManager.Core.MailMerge
         /// </summary>
         /// <param name="field"></param>
         /// <param name="replacementText">The content to replace the merge field with.</param>
-        public static void ReplaceWithText(this FieldCode field, string replacementText)
+        internal static void ReplaceWithText(this FieldCode field, string replacementText)
         {
             if (field == null)
             {
@@ -151,7 +151,7 @@ namespace DocumentManager.Core.MailMerge
         /// </summary>
         /// <param name="fields"></param>
         /// <param name="replacementText">The content to replace the merge field with.</param>
-        public static void ReplaceWithText(this IEnumerable<FieldCode> fields, string replacementText)
+        internal static void ReplaceWithText(this IEnumerable<FieldCode> fields, string replacementText)
         {
             if (fields == null || !fields.Any())
             {
@@ -170,7 +170,7 @@ namespace DocumentManager.Core.MailMerge
         /// <param name="fields"></param>
         /// <param name="replacementTexts">The text values to replace the merge fields with</param>
         /// <param name="removeExcess">Optional value to indicate that excess merge fields are removes instead of replacing with blank values</param>
-        public static void ReplaceWithText(this IEnumerable<FieldCode> fields, IEnumerable<string> replacementTexts, bool removeExcess = false)
+        internal static void ReplaceWithText(this IEnumerable<FieldCode> fields, IEnumerable<string> replacementTexts, bool removeExcess = false)
         {
             if (fields == null || !fields.Any())
             {
@@ -199,7 +199,7 @@ namespace DocumentManager.Core.MailMerge
             }
         }
 
-        public static string GetMergeFieldStartString(string mergeFieldName)
+        internal static string GetMergeFieldStartString(string mergeFieldName)
         {
             return $" MERGEFIELD  {(!string.IsNullOrEmpty(mergeFieldName) ? mergeFieldName : "<NoNameMergeField>")}";
         }

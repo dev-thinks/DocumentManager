@@ -20,7 +20,7 @@ namespace DocumentManager.Core.Converters
         /// <param name="source"></param>
         /// <param name="target"></param>
         /// <param name="rep"></param>
-        public void Do(string source, string target, Placeholders rep)
+        internal void Do(string source, string target, Placeholders rep)
         {
             _logger.LogTrace("Start processing docx to docx transformation");
 
@@ -38,7 +38,7 @@ namespace DocumentManager.Core.Converters
         /// <param name="source"></param>
         /// <param name="rep"></param>
         /// <returns></returns>
-        public MemoryStream Merge(string source, Placeholders rep)
+        internal MemoryStream Merge(string source, Placeholders rep)
         {
             var docx = new DocXHandler(source, rep, _logger);
             var ms = docx.ReplaceAll();
@@ -53,7 +53,7 @@ namespace DocumentManager.Core.Converters
         /// <param name="source"></param>
         /// <param name="target"></param>
         /// <param name="options"></param>
-        public void AddWaterMark(string source, string target, WaterMarkOptions options = null)
+        internal void AddWaterMark(string source, string target, WaterMarkOptions options)
         {
             var watermark = new DocxWatermark(source, _logger, options);
             var ws = watermark.Do();
@@ -67,9 +67,9 @@ namespace DocumentManager.Core.Converters
         /// <remarks>If source and target are same, it will replace the source document without watermark</remarks>
         /// <param name="source"></param>
         /// <param name="target"></param>
-        public void RemoveWaterMark(string source, string target)
+        internal void RemoveWaterMark(string source, string target)
         {
-            var noWaterMark = new DocxWatermark(source, _logger);
+            var noWaterMark = new DocxWatermark(source, _logger, null);
             var woWaterMark = noWaterMark.Remove();
 
             Extensions.WriteMemoryStreamToDisk(woWaterMark, target);

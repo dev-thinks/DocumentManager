@@ -4,14 +4,17 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using DocumentManager.Core.MailMerge;
 using DocumentManager.Core.Models;
 using Microsoft.Extensions.Logging;
+using OpenXmlPowerTools;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TableCell = DocumentFormat.OpenXml.Wordprocessing.TableCell;
+using TableRow = DocumentFormat.OpenXml.Wordprocessing.TableRow;
 
 namespace DocumentManager.Core.Converters.Handlers
 {
-    public partial class DocXHandler
+    internal class DocXHandler
     {
         private readonly MemoryStream _docxMs;
         private readonly Placeholders _rep;
@@ -298,9 +301,29 @@ namespace DocumentManager.Core.Converters.Handlers
 
         }
 
-        private static void CleanMarkup(WordprocessingDocument doc)
+        private void CleanMarkup(WordprocessingDocument doc)
         {
-
+            if (_rep.CanCleanUpMarkup)
+            {
+                //REMOVE THESE Markups, because they break up the text into multiple pieces, 
+                //thereby preventing simple search and replace
+                var settings = new SimplifyMarkupSettings
+                {
+                    RemoveComments = true,
+                    RemoveContentControls = true,
+                    RemoveEndAndFootNotes = true,
+                    RemoveFieldCodes = false,
+                    RemoveLastRenderedPageBreak = true,
+                    RemovePermissions = true,
+                    RemoveProof = true,
+                    RemoveRsidInfo = true,
+                    RemoveSmartTags = true,
+                    RemoveSoftHyphens = true,
+                    ReplaceTabsWithSpaces = true,
+                    RemoveBookmarks = true
+                };
+                MarkupSimplifier.SimplifyMarkup(doc, settings);
+            }
         }
     }
 }

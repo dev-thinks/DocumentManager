@@ -1,4 +1,4 @@
-﻿using DocumentManager.Core.Converters;
+﻿using DocumentManager.Core;
 using DocumentManager.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -13,7 +13,7 @@ namespace DocumentManager.Tests.HyperLinks
             using IServiceScope serviceScope = services.CreateScope();
             IServiceProvider provider = serviceScope.ServiceProvider;
 
-            var docxToDocx = provider.GetRequiredService<DocxToDocx>();
+            var executor = provider.GetRequiredService<Executor>();
 
             var placeholders = new Placeholders
             {
@@ -29,7 +29,7 @@ namespace DocumentManager.Tests.HyperLinks
                 }
             };
 
-            docxToDocx.Do("HyperLinks\\LinkMergeTemplate.docx", "LinkMergeDocument.docx", placeholders);
+            executor.Convert("HyperLinks\\LinkMergeTemplate.docx", "LinkMergeDocument.docx", placeholders);
         }
     }
 }

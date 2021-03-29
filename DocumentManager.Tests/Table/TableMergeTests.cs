@@ -1,4 +1,4 @@
-﻿using DocumentManager.Core.Converters;
+﻿using DocumentManager.Core;
 using DocumentManager.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -13,7 +13,7 @@ namespace DocumentManager.Tests.Table
             using IServiceScope serviceScope = services.CreateScope();
             IServiceProvider provider = serviceScope.ServiceProvider;
 
-            var docxToDocx = provider.GetRequiredService<DocxToDocx>();
+            var executor = provider.GetRequiredService<Executor>();
 
             var table = new TableElement
             {
@@ -36,7 +36,7 @@ namespace DocumentManager.Tests.Table
                 TablePlaceholders = new List<TableElement> { table }
             };
 
-            docxToDocx.Do("Table\\InvoiceTable.docx", "InvoiceTableDocument.docx", placeholders);
+            executor.Convert("Table\\InvoiceTable.docx", "InvoiceTableDocument.docx", placeholders);
         }
     }
 }

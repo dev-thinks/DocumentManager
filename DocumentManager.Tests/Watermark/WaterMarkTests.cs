@@ -1,4 +1,4 @@
-﻿using DocumentManager.Core.Converters;
+﻿using DocumentManager.Core;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -11,11 +11,11 @@ namespace DocumentManager.Tests.Watermark
             using IServiceScope serviceScope = services.CreateScope();
             IServiceProvider provider = serviceScope.ServiceProvider;
 
-            var docxToDocx = provider.GetRequiredService<DocxToDocx>();
+            var executor = provider.GetRequiredService<Executor>();
 
-            docxToDocx.AddWaterMark("WaterMark\\WaterMarkTemplate.docx", "With_WaterMark.docx");
+            executor.AddWaterMark("WaterMark\\WaterMarkTemplate.docx", "With_WaterMark.docx");
 
-            docxToDocx.RemoveWaterMark("With_WaterMark.docx", "Without_WaterMark.docx");
+            executor.RemoveWaterMark("With_WaterMark.docx", "Without_WaterMark.docx");
         }
     }
 }

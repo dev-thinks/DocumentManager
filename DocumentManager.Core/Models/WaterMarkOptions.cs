@@ -1,6 +1,6 @@
 ﻿namespace DocumentManager.Core.Models
 {
-    public class WaterMarkOptions
+    public class WaterMarkOptions: DocumentOptions
     {
         public WaterMarkOptions()
         {
