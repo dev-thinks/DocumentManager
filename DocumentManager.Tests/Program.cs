@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using DocumentManager.Tests.Image;
+using DocumentManager.Tests.Watermark;
 
 namespace DocumentManager.Tests
 {
@@ -19,7 +20,9 @@ namespace DocumentManager.Tests
 
             // TableMerge.PerformTest(host.Services);
 
-            ImageMerge.PerformTest(host.Services);
+            // ImageMerge.PerformTest(host.Services);
+
+            DocumentWaterMark.PerformTest(host.Services);
 
             Console.WriteLine("Completed.");
         }

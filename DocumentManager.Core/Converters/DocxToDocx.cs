@@ -33,8 +33,8 @@ namespace DocumentManager.Core.Converters
 
         /// <summary>
         /// Merges source docx template with data
-        /// <remarks>Replaces only the MERGEFIELD field codes in the template</remarks>
         /// </summary>
+        /// <remarks>Replaces only the MERGEFIELD field codes in the template</remarks>
         /// <param name="source"></param>
         /// <param name="rep"></param>
         /// <returns></returns>
@@ -48,14 +48,14 @@ namespace DocumentManager.Core.Converters
 
         /// <summary>
         /// Adds watermark for the source document.
-        /// <remarks>If source and target are same, it will replace the source document with watermark</remarks>
         /// </summary>
+        /// <remarks>If source and target are same, it will replace the source document with watermark</remarks>
         /// <param name="source"></param>
         /// <param name="target"></param>
         /// <param name="options"></param>
-        public void AddWaterMark(string source, string target, WaterMarkOptions options)
+        public void AddWaterMark(string source, string target, WaterMarkOptions options = null)
         {
-            var watermark = new DocxWatermark(source, _logger);
+            var watermark = new DocxWatermark(source, _logger, options);
             var ws = watermark.Do();
 
             Extensions.WriteMemoryStreamToDisk(ws, target);
@@ -63,8 +63,8 @@ namespace DocumentManager.Core.Converters
 
         /// <summary>
         /// Removes watermark from the source document
-        /// <remarks>If source and target are same, it will replace the source document without watermark</remarks>
         /// </summary>
+        /// <remarks>If source and target are same, it will replace the source document without watermark</remarks>
         /// <param name="source"></param>
         /// <param name="target"></param>
         public void RemoveWaterMark(string source, string target)

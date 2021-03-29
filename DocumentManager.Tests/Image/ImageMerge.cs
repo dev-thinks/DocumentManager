@@ -28,6 +28,10 @@ namespace DocumentManager.Tests.Image
                     { "CustomerName", "Japan" },
                     {"OrgName", "This Org Inc."},
                     {"CartCount", "3" }
+                },
+                HyperlinkPlaceholders = new Dictionary<string, HyperlinkElement>
+                {
+                    { "PortalUrl", new HyperlinkElement { Text = "PortalUrl", Link = "https://www.voltron.com/"} }
                 }
             };
 
