@@ -20,6 +20,12 @@ namespace DocumentManager.Core
             _logger = logger;
         }
 
+        /// <summary>
+        /// Converts source template into target document after merging data
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <param name="fieldValues"></param>
         public void Convert(string source, string target, Placeholders fieldValues = null)
         {
             var exception = ValidateParameterInputFile(source);
@@ -29,7 +35,7 @@ namespace DocumentManager.Core
                 throw exception;
             }
 
-            fieldValues ??= new Placeholders() {OpenOfficeLocation = _config["locationOfLibreOfficeSoffice"]};
+            fieldValues ??= new Placeholders();
 
             if (source.EndsWith(".docx"))
             {
@@ -39,15 +45,17 @@ namespace DocumentManager.Core
                 }
                 else if (target.EndsWith(".pdf"))
                 {
-                    
+                    fieldValues.OpenOfficeLocation = _config["locationOfLibreOfficeSoffice"];
                 }
                 else if (target.EndsWith(".html") || target.EndsWith(".htm"))
                 {
-                    
+                    fieldValues.OpenOfficeLocation = _config["locationOfLibreOfficeSoffice"];
                 }
             }
             else if (source.EndsWith(".html") || source.EndsWith(".htm"))
             {
+                fieldValues.OpenOfficeLocation = _config["locationOfLibreOfficeSoffice"];
+
                 if (target.EndsWith(".html") || target.EndsWith(".htm"))
                 {
                     
@@ -62,6 +70,62 @@ namespace DocumentManager.Core
                     
                 }
             }
+        }
+
+        /// <summary>
+        /// Converts source template into target document after merging data
+        /// </summary>
+        /// <returns>Returns memory stream of modified document</returns>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <param name="fieldValues"></param>
+        /// <returns></returns>
+        public MemoryStream Convert(string source, FileType target, Placeholders fieldValues = null)
+        {
+            var exception = ValidateParameterInputFile(source);
+
+            if (exception != null)
+            {
+                throw exception;
+            }
+
+            fieldValues ??= new Placeholders();
+
+            if (source.EndsWith(".docx"))
+            {
+                if (target == FileType.Docx)
+                {
+                    return _toDocx.Merge(source, fieldValues);
+                }
+                else if (target == FileType.Pdf)
+                {
+                    fieldValues.OpenOfficeLocation = _config["locationOfLibreOfficeSoffice"];
+                }
+                else if (target == FileType.Html || target == FileType.Htm)
+                {
+                    fieldValues.OpenOfficeLocation = _config["locationOfLibreOfficeSoffice"];
+                }
+            }
+            else if (source.EndsWith(".html") || source.EndsWith(".htm"))
+            {
+                fieldValues.OpenOfficeLocation = _config["locationOfLibreOfficeSoffice"];
+
+                if (target == FileType.Html || target == FileType.Htm)
+                {
+
+                }
+                else if (target == FileType.Docx)
+                {
+
+
+                }
+                else if (target == FileType.Pdf)
+                {
+
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -86,6 +150,28 @@ namespace DocumentManager.Core
         }
 
         /// <summary>
+        /// Adds watermark for the source document.
+        /// </summary>
+        /// <returns>Memory stream of the modified document</returns>
+        /// <param name="source"></param>
+        /// <param name="options"></param>
+        public MemoryStream AddWaterMark(string source, WaterMarkOptions options = null)
+        {
+            var exception = ValidateParameterInputFile(source);
+
+            if (exception != null)
+            {
+                throw exception;
+            }
+
+            options ??= new WaterMarkOptions();
+
+            var ms = _toDocx.AddWaterMark(source, options);
+
+            return ms;
+        }
+
+        /// <summary>
         /// Removes watermark from the source document
         /// </summary>
         /// <remarks>If source and target are same, it will replace the source document without watermark</remarks>
@@ -101,6 +187,25 @@ namespace DocumentManager.Core
             }
 
             _toDocx.RemoveWaterMark(source, target);
+        }
+
+        /// <summary>
+        /// Removes watermark from the source document
+        /// </summary>
+        /// <returns>Returns memory stream of modified document</returns>
+        /// <param name="source"></param>
+        public MemoryStream RemoveWaterMark(string source)
+        {
+            var exception = ValidateParameterInputFile(source);
+
+            if (exception != null)
+            {
+                throw exception;
+            }
+
+            var ms = _toDocx.RemoveWaterMark(source);
+
+            return ms;
         }
 
         private Exception ValidateParameterInputFile(string inputFile)

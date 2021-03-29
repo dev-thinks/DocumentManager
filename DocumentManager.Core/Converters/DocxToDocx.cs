@@ -62,6 +62,20 @@ namespace DocumentManager.Core.Converters
         }
 
         /// <summary>
+        /// Adds watermark for the source document
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        internal MemoryStream AddWaterMark(string source, WaterMarkOptions options)
+        {
+            var watermark = new DocxWatermark(source, _logger, options);
+            var ws = watermark.Do();
+
+            return ws;
+        }
+
+        /// <summary>
         /// Removes watermark from the source document
         /// </summary>
         /// <remarks>If source and target are same, it will replace the source document without watermark</remarks>
@@ -73,6 +87,19 @@ namespace DocumentManager.Core.Converters
             var woWaterMark = noWaterMark.Remove();
 
             Extensions.WriteMemoryStreamToDisk(woWaterMark, target);
+        }
+
+        /// <summary>
+        /// Removes watermark if present from source document
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        internal MemoryStream RemoveWaterMark(string source)
+        {
+            var noWaterMark = new DocxWatermark(source, _logger, null);
+            var woWaterMark = noWaterMark.Remove();
+
+            return woWaterMark;
         }
     }
 }
