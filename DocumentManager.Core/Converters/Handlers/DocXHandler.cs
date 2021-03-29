@@ -36,7 +36,7 @@ namespace DocumentManager.Core.Converters.Handlers
 
                 if (_rep.HyperlinkPlaceholders?.Count > 0)
                 {
-                    MergeHyperlinks();
+                    MergeHyperlinkFieldCode();
                 }
 
                 if (_rep.TablePlaceholders?.Count > 0)
@@ -46,7 +46,7 @@ namespace DocumentManager.Core.Converters.Handlers
 
                 if (_rep.ImagePlaceholders?.Count > 0)
                 {
-                    MergeImages();
+                    MergeImageFieldCode();
                 }
             }
 
@@ -176,7 +176,7 @@ namespace DocumentManager.Core.Converters.Handlers
                        OpenXmlWordHelpers.GetMergeFieldStartString($"{table.Suffix}:{table.TableName}"));
         }
 
-        public MemoryStream MergeHyperlinks()
+        public MemoryStream MergeHyperlinkFieldCode()
         {
             if (_rep.HyperlinkPlaceholders == null || _rep.HyperlinkPlaceholders.Count == 0)
             {
@@ -244,82 +244,56 @@ namespace DocumentManager.Core.Converters.Handlers
             }
 
             _docxMs.Position = 0;
+
             return _docxMs;
         }
 
-        public MemoryStream MergeImages()
+        public MemoryStream MergeImageFieldCode()
         {
-            if (_rep.ImagePlaceholders == null || _rep.ImagePlaceholders.Count == 0)
-                return null;
-
             using (var doc = WordprocessingDocument.Open(_docxMs, true))
             {
                 CleanMarkup(doc);
 
-                var documentTexts = doc.MainDocumentPart.Document.Descendants<Text>();
+                var imageMergeFields = doc.MainDocumentPart.Document.Descendants<FieldCode>();
 
-                foreach (var text in documentTexts)
+                foreach (var imageMergeField in imageMergeFields)
                 {
                     foreach (var replace in _rep.ImagePlaceholders)
                     {
-                        string pl = _rep.ImagePlaceholderStartTag + replace.Key + _rep.ImagePlaceholderEndTag;
-                        _imageCounter++;
-                        if (text.Text.Contains(pl))
+                        string pl =  replace.Key;
+                        if (imageMergeField.Text.Contains(pl))
                         {
-                            var run = text.Ancestors<Run>().First();
-                            var newRunForImage = new Run();
-                            //Break the texts into the part before and after image. Then create separate runs for them
-                            var pos = text.Text.IndexOf(pl, StringComparison.CurrentCulture);
+                            _imageCounter++;
 
-                            if (pos == 0)
+                            Run rFldCode = imageMergeField.Parent as Run;
+                            Run rBegin = rFldCode?.PreviousSibling<Run>();
+                            Run rSep = rFldCode?.NextSibling<Run>();
+
+                            Run rText = rSep?.NextSibling<Run>();
+                            Run rEnd = rText?.NextSibling<Run>();
+
+                            rFldCode?.Remove();
+                            rBegin?.Remove();
+                            rSep?.Remove();
+                            rEnd?.Remove();
+
+                            var run = rText;
+                            Text t = rText?.GetFirstChild<Text>();
+
+                            if (t != null)
                             {
-                                var newAfterRun = (Run)run.Clone();
-                                string afterText = text.Text.Substring(pl.Length, text.Text.Length - pl.Length);
-                                Text newAfterRunText = newAfterRun.GetFirstChild<Text>();
-                                newAfterRunText.Space = SpaceProcessingModeValues.Preserve;
-                                newAfterRunText.Text = afterText;
-
-                                run.Parent.InsertAfter(newAfterRun, run);
+                                t.Text = string.Empty;
                             }
-                            else if (text.Text.EndsWith(pl))
-                            {
-                                var newBeforeRun = (Run)run.Clone();
-                                string beforeText = text.Text.Substring(0, pos);
-                                Text newBeforeRunText = newBeforeRun.GetFirstChild<Text>();
-                                newBeforeRunText.Space = SpaceProcessingModeValues.Preserve;
-                                newBeforeRunText.Text = beforeText;
-
-                                run.Parent.InsertBefore(newBeforeRun, run);
-                            }
-                            else
-                            {
-                                var newBeforeRun = (Run)run.Clone();
-                                string beforeText = text.Text.Substring(0, pos);
-                                Text newBeforeRunText = newBeforeRun.GetFirstChild<Text>();
-                                newBeforeRunText.Space = SpaceProcessingModeValues.Preserve;
-                                newBeforeRunText.Text = beforeText;
-                                run.Parent.InsertBefore(newBeforeRun, run);
-
-                                var newAfterRun = (Run)run.Clone();
-                                string afterText =
-                                    text.Text.Substring(pos + pl.Length, text.Text.Length - pos - pl.Length);
-                                Text newAfterRunText = newAfterRun.GetFirstChild<Text>();
-                                newAfterRunText.Space = SpaceProcessingModeValues.Preserve;
-                                newAfterRunText.Text = afterText;
-                                run.Parent.InsertAfter(newAfterRun, run);
-                            }
-
-                            run.Parent.InsertBefore(newRunForImage, run);
-                            run.Remove();
 
                             var imageHandler = new ImageHandler(_logger);
-                            imageHandler.AppendImageToElement(replace, newRunForImage, doc, _imageCounter);
+                            imageHandler.AppendImageToElement(replace, run, doc, _imageCounter);
                         }
                     }
                 }
             }
 
             _docxMs.Position = 0;
+
             return _docxMs;
 
         }

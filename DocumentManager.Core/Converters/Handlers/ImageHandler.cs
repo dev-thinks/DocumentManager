@@ -22,18 +22,17 @@ namespace DocumentManager.Core.Converters.Handlers
         }
 
         public void AppendImageToElement(KeyValuePair<string, ImageElement> placeholder, OpenXmlElement element,
-            WordprocessingDocument wordprocessingDocument, int imageCounter)
+            WordprocessingDocument doc, int imageCounter)
         {
             string imageExtension = placeholder.Value.MemStream.GetImageType();
 
-            MainDocumentPart mainPart = wordprocessingDocument.MainDocumentPart;
+            MainDocumentPart mainPart = doc.MainDocumentPart;
 
             var imageUri = new Uri($"/word/media/{placeholder.Key}{imageCounter}.{imageExtension}", UriKind.Relative);
 
             // Create "image" part in /word/media
             // Change content type for other image types.
-            PackagePart packageImagePart =
-                wordprocessingDocument.Package.CreatePart(imageUri, "Image/" + imageExtension);
+            PackagePart packageImagePart = doc.Package.CreatePart(imageUri, "Image/" + imageExtension);
 
             // Feed data.
             placeholder.Value.MemStream.Position = 0;

@@ -21,6 +21,12 @@
     <None Update="HyperLinks\CartReport.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Image\CartImage.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Image\QRCode.PNG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Table\Invoice.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using DocumentManager.Tests.Image;
 
 namespace DocumentManager.Tests
 {
@@ -18,7 +19,7 @@ namespace DocumentManager.Tests
 
             // TableMerge.PerformTest(host.Services);
 
-            LinkMerge.PerformTest(host.Services);
+            ImageMerge.PerformTest(host.Services);
 
             Console.WriteLine("Completed.");
         }
