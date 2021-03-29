@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DocumentManager.Core.Models;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,45 +9,32 @@ using System.Threading;
 
 namespace DocumentManager.Core.Converters.Handlers
 {
-    //THIS ALL COMES FROM: https://github.com/Reflexe/doc_to_pdf
-
-    //And very helpful: https://stackoverflow.com/questions/30349542/command-libreoffice-headless-convert-to-pdf-test-docx-outdir-pdf-is-not 
-    public class LibreOfficeFailedException : Exception
+    /// <summary>
+    /// Open office handler operations
+    /// </summary>
+    /// <remarks>Credits and base idea taken from here: https://github.com/Reflexe/doc_to_pdf and 
+    /// https://stackoverflow.com/questions/30349542/command-libreoffice-headless-convert-to-pdf-test-docx-outdir-pdf-is-not
+    /// </remarks>
+    public class OpenOfficeHandler
     {
-        public LibreOfficeFailedException(int exitCode)
-            : base(string.Format("LibreOffice has failed with " + exitCode))
-        { }
-    }
+        private readonly ILogger _logger;
+        private readonly Placeholders _placeholders;
 
-    public static class LibreOfficeWrapper
-    {
-
-        private static string GetLibreOfficePath()
+        public OpenOfficeHandler(ILogger logger, Placeholders placeholders)
         {
-            switch (Environment.OSVersion.Platform)
-            {
-                case PlatformID.Unix:
-                    return "/usr/bin/soffice";
-                case PlatformID.Win32NT:
-                    string binaryDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                    return binaryDirectory + "\\Windows\\program\\soffice.exe";
-                default:
-                    throw new PlatformNotSupportedException("Your OS is not supported");
-            }
+            _logger = logger;
+            _placeholders = placeholders;
         }
 
-        public static void Convert(string inputFile, string outputFile, string libreOfficePath)
+        public void Convert(string inputFile, string outputFile)
         {
             var commandArgs = new List<string>();
             string convertedFile = "";
 
-            if (string.IsNullOrEmpty(libreOfficePath))
-            {
-                libreOfficePath = GetLibreOfficePath();
-            }
+            var libreOfficePath = _placeholders.OpenOfficeLocation ?? GetLibreOfficePath();
 
             //Create tmp folder
-            var tmpFolder = Path.Combine(Path.GetDirectoryName(outputFile), "DocXHtmlToPdfConverterTmp" + Guid.NewGuid().ToString().Substring(0, 10));
+            var tmpFolder = _placeholders.WorkingLocation; // Path.Combine(_placeholders.WorkingLocation, "OpenOffice");
             if (!Directory.Exists(tmpFolder))
             {
                 Directory.CreateDirectory(tmpFolder);
@@ -77,7 +66,11 @@ namespace DocumentManager.Core.Converters.Handlers
             commandArgs.AddRange(new[] { inputFile, "--norestore", "--writer", "--headless", "--outdir", tmpFolder });
 
             var procStartInfo = new ProcessStartInfo(libreOfficePath);
-            foreach (var arg in commandArgs) { procStartInfo.ArgumentList.Add(arg); }
+            foreach (var arg in commandArgs)
+            {
+                procStartInfo.ArgumentList.Add(arg);
+            }
+
             procStartInfo.RedirectStandardOutput = true;
             procStartInfo.UseShellExecute = false;
             procStartInfo.CreateNoWindow = true;
@@ -99,34 +92,43 @@ namespace DocumentManager.Core.Converters.Handlers
             // Check for failed exit code.
             if (process.ExitCode != 0)
             {
-                throw new LibreOfficeFailedException(process.ExitCode);
+                throw new OpenOfficeHandlerException(process.ExitCode);
             }
             else
             {
-                if (File.Exists(outputFile)) File.Delete(outputFile);
+                if (File.Exists(outputFile))
+                {
+                    File.Delete(outputFile);
+                }
+
                 if (File.Exists(convertedFile))
                 {
                     File.Move(convertedFile, outputFile);
                 }
-                ClearDirectory(tmpFolder);
-                Directory.Delete(tmpFolder);
+
+                // Helper.ClearDirectory(tmpFolder);
             }
         }
 
-        private static void ClearDirectory(string folderName)
+        private static string GetLibreOfficePath()
         {
-            var dir = new DirectoryInfo(folderName);
-
-            foreach (FileInfo fi in dir.GetFiles())
+            switch (Environment.OSVersion.Platform)
             {
-                fi.Delete();
-            }
-
-            foreach (DirectoryInfo di in dir.GetDirectories())
-            {
-                ClearDirectory(di.FullName);
-                di.Delete();
+                case PlatformID.Unix:
+                    return "/usr/bin/soffice";
+                case PlatformID.Win32NT:
+                    string binaryDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    return binaryDirectory + "\\Windows\\program\\soffice.exe";
+                default:
+                    throw new PlatformNotSupportedException("Your OS is not supported");
             }
         }
+    }
+
+    public class OpenOfficeHandlerException : Exception
+    {
+        public OpenOfficeHandlerException(int exitCode)
+            : base(string.Format("LibreOffice has failed with " + exitCode))
+        { }
     }
 }

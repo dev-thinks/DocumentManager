@@ -17,18 +17,19 @@ namespace DocumentManager.Core.Converters
             _logger = logger;
         }
 
-        public void Do(string source, string target, Placeholders rep)
+        internal void Do(string docxSource, string pdfTarget, Placeholders rep)
         {
-            var ms = _toDocx.Merge(source, rep);
-
-            var tmpFile = Path.Combine(Path.GetDirectoryName(target),
-                $"{Path.GetFileNameWithoutExtension(target)}{Guid.NewGuid().ToString().Substring(0, 10)}.docx");
-
-            Extensions.WriteMemoryStreamToDisk(ms, tmpFile);
-
             try
             {
-                LibreOfficeWrapper.Convert(tmpFile, target, rep.OpenOfficeLocation);
+                var ms = _toDocx.Merge(docxSource, rep);
+
+                var tmpDocxFile = Path.Combine(rep.WorkingLocation, $"{Path.GetFileNameWithoutExtension(pdfTarget)}.docx");
+
+                Extensions.WriteMemoryStreamToDisk(ms, tmpDocxFile);
+
+                var openOffice = new OpenOfficeHandler(_logger, rep);
+
+                openOffice.Convert(tmpDocxFile, pdfTarget);
             }
             catch (Exception e)
             {
@@ -36,11 +37,7 @@ namespace DocumentManager.Core.Converters
             }
             finally
             {
-
-                if (File.Exists(tmpFile))
-                {
-                    File.Delete(tmpFile);
-                }
+                Helper.ClearDirectory(rep.WorkingLocation);
             }
         }
     }

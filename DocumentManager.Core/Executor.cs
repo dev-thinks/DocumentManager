@@ -11,12 +11,14 @@ namespace DocumentManager.Core
     {
         private readonly IConfiguration _config;
         private readonly DocxToDocx _toDocx;
+        private readonly DocxToPdf _toPdf;
         private readonly ILogger<Executor> _logger;
 
-        public Executor(IConfiguration config, DocxToDocx toDocx, ILogger<Executor> logger)
+        public Executor(IConfiguration config, DocxToDocx toDocx, DocxToPdf toPdf, ILogger<Executor> logger)
         {
             _config = config;
             _toDocx = toDocx;
+            _toPdf = toPdf;
             _logger = logger;
         }
 
@@ -45,16 +47,24 @@ namespace DocumentManager.Core
                 }
                 else if (target.EndsWith(".pdf"))
                 {
-                    fieldValues.OpenOfficeLocation = _config["locationOfLibreOfficeSoffice"];
+                    fieldValues = (Placeholders) AssignDocumentOptions(fieldValues);
+
+                    ValidateAndSetupWorkingDirectory(fieldValues);
+
+                    _toPdf.Do(source, target, fieldValues);
                 }
                 else if (target.EndsWith(".html") || target.EndsWith(".htm"))
                 {
-                    fieldValues.OpenOfficeLocation = _config["locationOfLibreOfficeSoffice"];
+                    fieldValues = (Placeholders)AssignDocumentOptions(fieldValues);
+
+                    ValidateAndSetupWorkingDirectory(fieldValues);
                 }
             }
             else if (source.EndsWith(".html") || source.EndsWith(".htm"))
             {
-                fieldValues.OpenOfficeLocation = _config["locationOfLibreOfficeSoffice"];
+                fieldValues = (Placeholders)AssignDocumentOptions(fieldValues);
+
+                ValidateAndSetupWorkingDirectory(fieldValues);
 
                 if (target.EndsWith(".html") || target.EndsWith(".htm"))
                 {
@@ -99,16 +109,16 @@ namespace DocumentManager.Core
                 }
                 else if (target == FileType.Pdf)
                 {
-                    fieldValues.OpenOfficeLocation = _config["locationOfLibreOfficeSoffice"];
+                    fieldValues = (Placeholders)AssignDocumentOptions(fieldValues);
                 }
                 else if (target == FileType.Html || target == FileType.Htm)
                 {
-                    fieldValues.OpenOfficeLocation = _config["locationOfLibreOfficeSoffice"];
+                    fieldValues = (Placeholders)AssignDocumentOptions(fieldValues);
                 }
             }
             else if (source.EndsWith(".html") || source.EndsWith(".htm"))
             {
-                fieldValues.OpenOfficeLocation = _config["locationOfLibreOfficeSoffice"];
+                fieldValues = (Placeholders)AssignDocumentOptions(fieldValues);
 
                 if (target == FileType.Html || target == FileType.Htm)
                 {
@@ -275,6 +285,45 @@ namespace DocumentManager.Core
             }
 
             return null;
+        }
+
+        private void ValidateAndSetupWorkingDirectory(DocumentOptions options)
+        {
+            if (string.IsNullOrEmpty(options.OpenOfficeLocation))
+            {
+                _logger.LogError("Not a valid open office version: {@Options}", options);
+
+                throw new Exception("Not a valid open office version.");
+            }
+
+            if (!File.Exists(options.OpenOfficeLocation))
+            {
+                _logger.LogError("Open office is not setup correctly: {OfficeLocation}", options.OpenOfficeLocation);
+
+                throw new Exception("Open office is not setup correctly.");
+            }
+
+            if (!Directory.Exists(options.WorkingLocation))
+            {
+                try
+                {
+                    Directory.CreateDirectory(options.WorkingLocation);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Error while setup working directory: {Path}", options.WorkingLocation);
+
+                    throw;
+                }
+            }
+        }
+
+        private DocumentOptions AssignDocumentOptions(DocumentOptions options)
+        {
+            options.OpenOfficeLocation = _config["OpenOfficeLocation"];
+            options.WorkingLocation = $"{_config["WorkingLocation"]}\\{options.CurrentProcessId}\\";
+
+            return options;
         }
     }
 }

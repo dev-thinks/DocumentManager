@@ -8,13 +8,13 @@ namespace DocumentManager.Core.Models
         {
             var currentGuid = Guid.NewGuid();
 
-            TempLocation = $"working\\{currentGuid}";
+            WorkingLocation = "";
             OpenOfficeLocation = "";
             CanCleanUpMarkup = false;
             CurrentProcessId = currentGuid;
         }
 
-        public string TempLocation { get; set; }
+        public string WorkingLocation { get; set; }
 
         public string OpenOfficeLocation { get; set; }
 

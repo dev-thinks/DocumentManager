@@ -10,10 +10,4 @@
     <PackageReference Include="OpenXmlPowerTools-NetStandard" Version="4.4.21" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Converters\Handlers\draft.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
