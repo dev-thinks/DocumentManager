@@ -1,13 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using DocumentManager.Core.Converters;
+﻿using DocumentManager.Core.Converters;
+using DocumentManager.Core.Converters.Handlers;
 using DocumentManager.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 
-namespace DocumentManager.Tests.HyperLinks
+namespace DocumentManager.Tests.Image
 {
-    public class LinkMerge
+    public class ImageMergeTests
     {
+       static string executableLocation = Path.GetDirectoryName(
+            Assembly.GetExecutingAssembly().Location);
+
         public static void PerformTest(IServiceProvider services)
         {
             using IServiceScope serviceScope = services.CreateScope();
@@ -29,7 +35,16 @@ namespace DocumentManager.Tests.HyperLinks
                 }
             };
 
-            docxToDocx.Do("HyperLinks\\CartReport.docx", "CartReport_Merged.docx", placeholders);
+            var qrImage = Extensions.GetFileAsMemoryStream(Path.Combine(executableLocation, "Image\\QRCode.PNG"));
+
+            var qrImageElement = new ImageElement() { Dpi = 300, MemStream = qrImage };
+
+            placeholders.ImagePlaceholders = new Dictionary<string, ImageElement>
+            {
+                {"Signature", qrImageElement }
+            };
+
+            docxToDocx.Do("Image\\ImageMergeTemplate.docx", "ImageMergeDocument.docx", placeholders);
         }
     }
 }

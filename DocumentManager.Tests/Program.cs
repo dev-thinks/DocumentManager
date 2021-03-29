@@ -1,12 +1,12 @@
 ﻿using DocumentManager.Core;
 using DocumentManager.Core.Converters;
-using DocumentManager.Tests.HyperLinks;
+using DocumentManager.Tests.Image;
+using DocumentManager.Tests.Table;
+using DocumentManager.Tests.Watermark;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using DocumentManager.Tests.Image;
-using DocumentManager.Tests.Watermark;
 
 namespace DocumentManager.Tests
 {
@@ -18,11 +18,11 @@ namespace DocumentManager.Tests
 
             Console.WriteLine("Hello World!");
 
-            // TableMerge.PerformTest(host.Services);
+            TableMergeTests.PerformTest(host.Services);
 
-            // ImageMerge.PerformTest(host.Services);
+            ImageMergeTests.PerformTest(host.Services);
 
-            DocumentWaterMark.PerformTest(host.Services);
+            WaterMarkTests.PerformTest(host.Services);
 
             Console.WriteLine("Completed.");
         }

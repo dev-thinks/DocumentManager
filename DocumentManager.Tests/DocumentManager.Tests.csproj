@@ -18,10 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="HyperLinks\CartReport.docx">
+    <None Update="HyperLinks\LinkMergeTemplate.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Image\CartImage.docx">
+    <None Update="Image\ImageMergeTemplate.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Image\QRCode.PNG">
@@ -36,7 +36,7 @@
     <None Update="Table\TableTemplate.docx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Watermark\WaterMark.docx">
+    <None Update="Watermark\WaterMarkTemplate.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

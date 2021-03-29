@@ -4,7 +4,7 @@ using System;
 
 namespace DocumentManager.Tests.Watermark
 {
-    public class DocumentWaterMark
+    public class WaterMarkTests
     {
         public static void PerformTest(IServiceProvider services)
         {
@@ -13,7 +13,7 @@ namespace DocumentManager.Tests.Watermark
 
             var docxToDocx = provider.GetRequiredService<DocxToDocx>();
 
-            docxToDocx.AddWaterMark("WaterMark\\WaterMark.docx", "With_WaterMark.docx");
+            docxToDocx.AddWaterMark("WaterMark\\WaterMarkTemplate.docx", "With_WaterMark.docx");
 
             docxToDocx.RemoveWaterMark("With_WaterMark.docx", "Without_WaterMark.docx");
         }

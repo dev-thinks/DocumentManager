@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace DocumentManager.Tests.Table
 {
-    public class TableMerge
+    public class TableMergeTests
     {
         public static void PerformTest(IServiceProvider services)
         {
@@ -36,7 +36,7 @@ namespace DocumentManager.Tests.Table
                 TablePlaceholders = new List<TableElement> { table }
             };
 
-            docxToDocx.Do("Table\\InvoiceTable.docx", "InvoiceTable_Merged.docx", placeholders);
+            docxToDocx.Do("Table\\InvoiceTable.docx", "InvoiceTableDocument.docx", placeholders);
         }
     }
 }
