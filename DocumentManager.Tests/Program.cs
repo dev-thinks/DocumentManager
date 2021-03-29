@@ -22,9 +22,9 @@ namespace DocumentManager.Tests
 
             //ImageMergeTests.PerformTest(host.Services);
 
-            WaterMarkTests.PerformTest(host.Services);
+            //WaterMarkTests.PerformTest(host.Services);
 
-            //PdfMergeTests.PerformTest(host.Services);
+            PdfMergeTests.PerformTest(host.Services);
 
             Console.WriteLine("Completed.");
         }

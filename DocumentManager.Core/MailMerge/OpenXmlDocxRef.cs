@@ -2,6 +2,7 @@
 using Ap = DocumentFormat.OpenXml.ExtendedProperties;
 using DocumentFormat.OpenXml.Wordprocessing;
 using DocumentFormat.OpenXml;
+using DocumentManager.Core.Models;
 using A = DocumentFormat.OpenXml.Drawing;
 using Thm15 = DocumentFormat.OpenXml.Office2013.Theme;
 using V = DocumentFormat.OpenXml.Vml;
@@ -43,7 +44,7 @@ namespace DocumentManager.Core.MailMerge
             GenerateWebSettingsPart1Content(webSettingsPart1);
 
             HeaderPart headerPart1 = mainDocumentPart1.AddNewPart<HeaderPart>("rId7");
-            GenerateHeaderPart1Content(headerPart1);
+            GenerateHeaderPart1Content(headerPart1, null, "");
 
             FontTablePart fontTablePart1 = mainDocumentPart1.AddNewPart<FontTablePart>("rId12");
             GenerateFontTablePart1Content(fontTablePart1);
@@ -346,7 +347,7 @@ namespace DocumentManager.Core.MailMerge
         }
 
         // Generates content of footerPart1.
-        private void GenerateFooterPart1Content(FooterPart footerPart1)
+        public void GenerateFooterPart1Content(FooterPart footerPart1)
         {
             Footer footer1 = new Footer() { MCAttributes = new MarkupCompatibilityAttributes() { Ignorable = "w14 w15 w16se w16cid w16 w16cex wp14" } };
             footer1.AddNamespaceDeclaration("wpc", "http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas");
@@ -1010,7 +1011,7 @@ namespace DocumentManager.Core.MailMerge
         }
 
         // Generates content of headerPart1.
-        public static void GenerateHeaderPart1Content(HeaderPart headerPart1)
+        public static void GenerateHeaderPart1Content(HeaderPart headerPart1, WaterMarkOptions options, string waterMarkTypeId)
         {
             Header header1 = new Header() { MCAttributes = new MarkupCompatibilityAttributes() { Ignorable = "w14 w15 w16se w16cid w16 w16cex wp14" } };
             header1.AddNamespaceDeclaration("wpc", "http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas");
@@ -1078,7 +1079,7 @@ namespace DocumentManager.Core.MailMerge
 
             Picture picture1 = new Picture() { AnchorId = "699E31DA" };
 
-            V.Shapetype shapetype1 = new V.Shapetype() { Id = "_x0000_t136", CoordinateSize = "21600,21600", OptionalNumber = 136, Adjustment = "10800", EdgePath = "m@7,l@8,m@5,21600l@6,21600e" };
+            V.Shapetype shapetype1 = new V.Shapetype() { Id = waterMarkTypeId, CoordinateSize = "21600,21600", OptionalNumber = 136, Adjustment = "10800", EdgePath = "m@7,l@8,m@5,21600l@6,21600e" };
 
             V.Formulas formulas1 = new V.Formulas();
             V.Formula formula1 = new V.Formula() { Equation = "sum #0 0 10800" };
@@ -1114,7 +1115,7 @@ namespace DocumentManager.Core.MailMerge
             V.TextPath textPath1 = new V.TextPath() { On = true, FitShape = true };
 
             V.ShapeHandles shapeHandles1 = new V.ShapeHandles();
-            V.ShapeHandle shapeHandle1 = new V.ShapeHandle() { Position = "#0,bottomRight", XRange = "6629,14971" };
+            V.ShapeHandle shapeHandle1 = new V.ShapeHandle() { Position = $"#0,{options.Position}", XRange = "6629,14971" };
 
             shapeHandles1.Append(shapeHandle1);
             Ovml.Lock lock1 = new Ovml.Lock() { Extension = V.ExtensionHandlingBehaviorValues.Edit, TextLock = true, ShapeType = true };
@@ -1125,9 +1126,10 @@ namespace DocumentManager.Core.MailMerge
             shapetype1.Append(shapeHandles1);
             shapetype1.Append(lock1);
 
-            V.Shape shape1 = new V.Shape() { Id = "PowerPlusWaterMarkObject357476642", Style = "position:absolute;margin-left:0;margin-top:0;width:527.85pt;height:131.95pt;rotation:315;z-index:-251657216;mso-position-horizontal:center;mso-position-horizontal-relative:margin;mso-position-vertical:center;mso-position-vertical-relative:margin", OptionalString = "_x0000_s2049", AllowInCell = false, FillColor = "silver", Stroked = false, Type = "#_x0000_t136" };
+            V.Shape shape1 = new V.Shape() { Id = "PowerPlusWaterMarkObject357476642", 
+                Style = options.ElementStyle, OptionalString = "_x0000_s2049", AllowInCell = false, FillColor = options.ElementColor, Stroked = false, Type = $"#{waterMarkTypeId}" };
             V.Fill fill1 = new V.Fill() { Opacity = ".5" };
-            V.TextPath textPath2 = new V.TextPath() { Style = "font-family:\"Calibri\";font-size:1pt", String = "CONFIDENTIAL" };
+            V.TextPath textPath2 = new V.TextPath() { Style = options.ElementFontFamily, String = options.Text };
             Wvml.TextWrap textWrap1 = new Wvml.TextWrap() { AnchorX = Wvml.HorizontalAnchorValues.Margin, AnchorY = Wvml.VerticalAnchorValues.Margin };
 
             shape1.Append(fill1);
@@ -1143,12 +1145,12 @@ namespace DocumentManager.Core.MailMerge
             paragraph11.Append(paragraphProperties2);
             paragraph11.Append(run15);
 
-            sdtContentBlock1.Append(paragraph11);
+            //sdtContentBlock1.Append(paragraph11);
 
-            sdtBlock1.Append(sdtProperties1);
-            sdtBlock1.Append(sdtContentBlock1);
+            //sdtBlock1.Append(sdtProperties1);
+            //sdtBlock1.Append(sdtContentBlock1);
 
-            header1.Append(sdtBlock1);
+            header1.Append(paragraph11);
 
             headerPart1.Header = header1;
         }
@@ -2355,7 +2357,7 @@ namespace DocumentManager.Core.MailMerge
         }
 
         // Generates content of footerPart2.
-        private void GenerateFooterPart2Content(FooterPart footerPart2)
+        public void GenerateFooterPart2Content(FooterPart footerPart2)
         {
             Footer footer2 = new Footer() { MCAttributes = new MarkupCompatibilityAttributes() { Ignorable = "w14 w15 w16se w16cid w16 w16cex wp14" } };
             footer2.AddNamespaceDeclaration("wpc", "http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas");
@@ -2405,7 +2407,7 @@ namespace DocumentManager.Core.MailMerge
         }
 
         // Generates content of endnotesPart1.
-        private void GenerateEndnotesPart1Content(EndnotesPart endnotesPart1)
+        public void GenerateEndnotesPart1Content(EndnotesPart endnotesPart1)
         {
             Endnotes endnotes1 = new Endnotes() { MCAttributes = new MarkupCompatibilityAttributes() { Ignorable = "w14 w15 w16se w16cid w16 w16cex wp14" } };
             endnotes1.AddNamespaceDeclaration("wpc", "http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas");
@@ -2535,7 +2537,7 @@ namespace DocumentManager.Core.MailMerge
         }
 
         // Generates content of footnotesPart1.
-        private void GenerateFootnotesPart1Content(FootnotesPart footnotesPart1)
+        public void GenerateFootnotesPart1Content(FootnotesPart footnotesPart1)
         {
             Footnotes footnotes1 = new Footnotes() { MCAttributes = new MarkupCompatibilityAttributes() { Ignorable = "w14 w15 w16se w16cid w16 w16cex wp14" } };
             footnotes1.AddNamespaceDeclaration("wpc", "http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas");
@@ -2615,7 +2617,7 @@ namespace DocumentManager.Core.MailMerge
         }
 
         // Generates content of footerPart3.
-        private void GenerateFooterPart3Content(FooterPart footerPart3)
+        public void GenerateFooterPart3Content(FooterPart footerPart3)
         {
             Footer footer3 = new Footer() { MCAttributes = new MarkupCompatibilityAttributes() { Ignorable = "w14 w15 w16se w16cid w16 w16cex wp14" } };
             footer3.AddNamespaceDeclaration("wpc", "http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas");
@@ -2664,7 +2666,7 @@ namespace DocumentManager.Core.MailMerge
             footerPart3.Footer = footer3;
         }
 
-        private void SetPackageProperties(OpenXmlPackage document)
+        public void SetPackageProperties(OpenXmlPackage document)
         {
             document.PackageProperties.Creator = "KayKay";
             document.PackageProperties.Title = "";
