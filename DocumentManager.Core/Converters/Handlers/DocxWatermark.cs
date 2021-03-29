@@ -56,7 +56,7 @@ namespace DocumentManager.Core.Converters.Handlers
             return _docxMs;
         }
 
-        public MemoryStream Remove(string waterMarkId)
+        public MemoryStream Remove()
         {
             using (WordprocessingDocument doc = WordprocessingDocument.Open(_docxMs, true))
             {
