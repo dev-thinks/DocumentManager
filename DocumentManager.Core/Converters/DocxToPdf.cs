@@ -27,6 +27,9 @@ namespace DocumentManager.Core.Converters
 
                 Extensions.WriteMemoryStreamToDisk(ms, tmpDocxFile);
 
+                var ms2 = new DocxStamp().Create(tmpDocxFile);
+                Extensions.WriteMemoryStreamToDisk(ms2, tmpDocxFile);
+
                 // adds watermark if requested
                 if (rep.IsWaterMarkNeeded)
                 {
@@ -49,7 +52,7 @@ namespace DocumentManager.Core.Converters
             }
             finally
             {
-                Helper.ClearDirectory(rep.WorkingLocation);
+                //Helper.ClearDirectory(rep.WorkingLocation);
             }
         }
     }

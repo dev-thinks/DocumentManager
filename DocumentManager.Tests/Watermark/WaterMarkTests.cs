@@ -21,7 +21,7 @@ namespace DocumentManager.Tests.Watermark
 
             executor.Convert("WaterMark\\WaterMarkTemplate.docx", "WithWaterMark.docx", placeholders);
 
-            executor.RemoveWaterMark("WithWaterMark.docx", "WithOutWaterMark.docx");
+            //executor.RemoveWaterMark("WithWaterMark.docx", "WithOutWaterMark.docx");
         }
     }
 }
