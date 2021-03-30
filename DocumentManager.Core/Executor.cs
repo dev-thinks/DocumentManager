@@ -218,6 +218,27 @@ namespace DocumentManager.Core
             return ms;
         }
 
+        /// <summary>
+        /// Adds stamp mark for the source document.
+        /// </summary>
+        /// <remarks>If source and target are same, it will replace the source document with stampmark</remarks>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <param name="options"></param>
+        public void AddStampMark(string source, string target, StampMarkOptions options = null)
+        {
+            var exception = ValidateParameterInputFile(source);
+
+            if (exception != null)
+            {
+                throw exception;
+            }
+
+            options ??= new StampMarkOptions();
+
+            _toDocx.AddStampMark(source, target, options);
+        }
+
         private Exception ValidateParameterInputFile(string inputFile)
         {
             try
