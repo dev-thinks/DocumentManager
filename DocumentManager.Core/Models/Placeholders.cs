@@ -15,6 +15,7 @@ namespace DocumentManager.Core.Models
             ImagePlaceholders = new Dictionary<string, ImageElement>();
             HyperlinkPlaceholders = new Dictionary<string, HyperlinkElement>();
             IsWaterMarkNeeded = false;
+            IsStampMarkNeeded = false;
         }
 
         /// <summary>
@@ -33,5 +34,9 @@ namespace DocumentManager.Core.Models
         public bool IsWaterMarkNeeded { get; set; }
 
         public string WaterMarkText { get; set; }
+
+        public bool IsStampMarkNeeded { get; set; }
+
+        public string StampMarkText { get; set; }
     }
 }

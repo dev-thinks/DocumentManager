@@ -27,8 +27,12 @@ namespace DocumentManager.Core.Converters
 
                 Extensions.WriteMemoryStreamToDisk(ms, tmpDocxFile);
 
-                var ms2 = new DocxStamp().Create(tmpDocxFile);
-                Extensions.WriteMemoryStreamToDisk(ms2, tmpDocxFile);
+                // adds stamp mark if requested
+                if (rep.IsStampMarkNeeded)
+                {
+                    var ms2 = new DocxStamp().Create(tmpDocxFile);
+                    Extensions.WriteMemoryStreamToDisk(ms2, tmpDocxFile);
+                }
 
                 // adds watermark if requested
                 if (rep.IsWaterMarkNeeded)
