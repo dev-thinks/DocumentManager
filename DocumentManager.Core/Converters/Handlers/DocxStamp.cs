@@ -282,7 +282,7 @@ namespace DocumentManager.Core.Converters.Handlers
             runProperties2.Append(emphasis1);
             runProperties2.Append(languages1);
             Text text1 = new Text();
-            text1.Text = "ＡＰＰＲＯＶＥＤ";
+            text1.Text = _options.Text;
 
             run2.Append(runProperties2);
             run2.Append(text1);
@@ -434,7 +434,7 @@ namespace DocumentManager.Core.Converters.Handlers
             runProperties3.Append(emphasis2);
             runProperties3.Append(languages2);
             Text text2 = new Text();
-            text2.Text = "ＡＰＰＲＯＶＥＤ";
+            text2.Text = _options.Text;
 
             run3.Append(runProperties3);
             run3.Append(text2);

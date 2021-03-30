@@ -32,10 +32,7 @@ namespace DocumentManager.Core.Converters
                 {
                     var options = new StampMarkOptions(rep.StampMarkText);
 
-                    var stampDoc = new DocxStamp(tmpDocxFile, _logger, options);
-                    var ms2 = stampDoc.Do();
-
-                    Extensions.WriteMemoryStreamToDisk(ms2, tmpDocxFile);
+                    _toDocx.AddStampMark(tmpDocxFile, tmpDocxFile, options);
                 }
 
                 // adds watermark if requested

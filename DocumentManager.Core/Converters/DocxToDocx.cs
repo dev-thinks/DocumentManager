@@ -34,10 +34,7 @@ namespace DocumentManager.Core.Converters
             {
                 var options = new StampMarkOptions(rep.StampMarkText);
 
-                var stampDoc = new DocxStamp(target, _logger, options);
-                var ms2 = stampDoc.Do();
-
-                Extensions.WriteMemoryStreamToDisk(ms2, target);
+                AddStampMark(target, target, options);
             }
 
             if (rep.IsWaterMarkNeeded)
@@ -121,6 +118,21 @@ namespace DocumentManager.Core.Converters
             var woWaterMark = noWaterMark.Remove();
 
             return woWaterMark;
+        }
+
+        /// <summary>
+        /// Adds stamp mark for the source document.
+        /// </summary>
+        /// <remarks>If source and target are same, it will replace the source document with watermark</remarks>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <param name="options"></param>
+        internal void AddStampMark(string source, string target, StampMarkOptions options)
+        {
+            var stampDoc = new DocxStamp(source, _logger, options);
+            var ws = stampDoc.Do();
+
+            Extensions.WriteMemoryStreamToDisk(ws, target);
         }
     }
 }

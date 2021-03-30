@@ -13,7 +13,7 @@ namespace DocumentManager.Core.Models
 
         public StampMarkOptions(string text)
         {
-            Text = text;
+            Text = string.IsNullOrEmpty(text) ? "ＡＰＰＲＯＶＥＤ" : text;
         }
 
         public string Text { get; set; }
