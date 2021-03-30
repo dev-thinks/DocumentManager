@@ -1,14 +1,17 @@
 ﻿using Microsoft.Extensions.Logging;
 using OpenXmlPowerTools;
 using System.Collections.Generic;
+using System.IO;
 
 namespace DocumentManager.Core.Converters.Handlers
 {
     internal class DocxMerger
     {
+        private readonly ILogger _logger;
+
         public DocxMerger(ILogger logger)
         {
-
+            _logger = logger;
         }
 
         internal void Do(string mergedTargetDoc, params string[] mergeDocs)
@@ -17,7 +20,14 @@ namespace DocumentManager.Core.Converters.Handlers
 
             foreach (var doc in mergeDocs)
             {
-                sources.Add(new Source(new WmlDocument(doc), true));
+                if (!File.Exists(doc))
+                {
+                    _logger.LogError("File not exists: {FileName}", doc);
+                }
+                else
+                {
+                    sources.Add(new Source(new WmlDocument(doc), true));
+                }
             }
 
             var mergedDoc = DocumentBuilder.BuildDocument(sources);
