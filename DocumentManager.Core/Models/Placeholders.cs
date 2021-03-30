@@ -31,5 +31,7 @@ namespace DocumentManager.Core.Models
         public Dictionary<string, HyperlinkElement> HyperlinkPlaceholders { get; set; }
 
         public bool IsWaterMarkNeeded { get; set; }
+
+        public string WaterMarkText { get; set; }
     }
 }

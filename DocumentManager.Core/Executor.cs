@@ -55,29 +55,29 @@ namespace DocumentManager.Core
                 }
                 else if (target.EndsWith(".html") || target.EndsWith(".htm"))
                 {
-                    fieldValues = (Placeholders)AssignDocumentOptions(fieldValues);
+                    fieldValues = (Placeholders) AssignDocumentOptions(fieldValues);
 
                     ValidateAndSetupWorkingDirectory(fieldValues);
                 }
             }
             else if (source.EndsWith(".html") || source.EndsWith(".htm"))
             {
-                fieldValues = (Placeholders)AssignDocumentOptions(fieldValues);
+                fieldValues = (Placeholders) AssignDocumentOptions(fieldValues);
 
                 ValidateAndSetupWorkingDirectory(fieldValues);
 
                 if (target.EndsWith(".html") || target.EndsWith(".htm"))
                 {
-                    
+
                 }
                 else if (target.EndsWith(".docx"))
                 {
 
-                    
+
                 }
                 else if (target.EndsWith(".pdf"))
                 {
-                    
+
                 }
             }
         }
@@ -109,16 +109,16 @@ namespace DocumentManager.Core
                 }
                 else if (target == FileType.Pdf)
                 {
-                    fieldValues = (Placeholders)AssignDocumentOptions(fieldValues);
+                    fieldValues = (Placeholders) AssignDocumentOptions(fieldValues);
                 }
                 else if (target == FileType.Html || target == FileType.Htm)
                 {
-                    fieldValues = (Placeholders)AssignDocumentOptions(fieldValues);
+                    fieldValues = (Placeholders) AssignDocumentOptions(fieldValues);
                 }
             }
             else if (source.EndsWith(".html") || source.EndsWith(".htm"))
             {
-                fieldValues = (Placeholders)AssignDocumentOptions(fieldValues);
+                fieldValues = (Placeholders) AssignDocumentOptions(fieldValues);
 
                 if (target == FileType.Html || target == FileType.Htm)
                 {
@@ -156,7 +156,7 @@ namespace DocumentManager.Core
 
             options ??= new WaterMarkOptions();
 
-            _toDocx.AddWaterMark(source,target, options);
+            _toDocx.AddWaterMark(source, target, options);
         }
 
         /// <summary>

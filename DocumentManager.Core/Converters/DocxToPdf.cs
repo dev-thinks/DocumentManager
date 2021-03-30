@@ -30,7 +30,11 @@ namespace DocumentManager.Core.Converters
                 // adds watermark if requested
                 if (rep.IsWaterMarkNeeded)
                 {
-                    var options = new WaterMarkOptions {Text = "SAMPLE", WaterMarkFor = FileType.Pdf};
+                    var options = new WaterMarkOptions
+                    {
+                        Text = rep.WaterMarkText ?? "SAMPLE",
+                        WaterMarkFor = FileType.Pdf
+                    };
 
                     _toDocx.AddWaterMark(tmpDocxFile, tmpDocxFile, options);
                 }

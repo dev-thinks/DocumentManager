@@ -34,6 +34,7 @@ namespace DocumentManager.Tests.Pdf
 
             var placeholders = new Placeholders
             {
+                IsWaterMarkNeeded = true,
                 TextPlaceholders = new Dictionary<string, string>
                 {
                     { "CustomerName", "Japan" },

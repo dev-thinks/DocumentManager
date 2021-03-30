@@ -32,7 +32,11 @@ namespace DocumentManager.Core.Converters
 
             if (rep.IsWaterMarkNeeded)
             {
-                var options = new WaterMarkOptions { Text = "SAMPLE", WaterMarkFor = FileType.Docx };
+                var options = new WaterMarkOptions
+                {
+                    Text = rep.WaterMarkText ?? "SAMPLE",
+                    WaterMarkFor = FileType.Docx
+                };
 
                 AddWaterMark(target, target, options);
             }
