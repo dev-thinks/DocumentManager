@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using DocumentManager.Core.Converters.Handlers;
 
 namespace DocumentManager.Core
 {
@@ -237,6 +238,23 @@ namespace DocumentManager.Core
             options ??= new StampMarkOptions();
 
             _toDocx.AddStampMark(source, target, options);
+        }
+
+        /// <summary>
+        /// Merge multiple docx files into single docx
+        /// </summary>
+        /// <param name="mergedTargetDoc"></param>
+        /// <param name="mergeDocs"></param>
+        public void MergeDocx(string mergedTargetDoc, params string[] mergeDocs)
+        {
+            if (mergeDocs == null || mergeDocs.Length == 0)
+            {
+                throw new Exception("No source document provided to merge.");
+            }
+
+            var merger = new DocxMerger(_logger);
+
+            merger.Do(mergedTargetDoc, mergeDocs);
         }
 
         private Exception ValidateParameterInputFile(string inputFile)

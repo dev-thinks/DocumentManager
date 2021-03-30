@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using DocumentManager.Tests.Merge;
 using Microsoft.Extensions.Configuration;
 
 namespace DocumentManager.Tests
@@ -22,9 +23,11 @@ namespace DocumentManager.Tests
 
             //ImageMergeTests.PerformTest(host.Services);
 
-            WaterMarkTests.PerformTest(host.Services);
+            //WaterMarkTests.PerformTest(host.Services);
 
             //PdfMergeTests.PerformTest(host.Services);
+
+            MergeDocxTests.PerformTest(host.Services);
 
             Console.WriteLine("Completed.");
         }

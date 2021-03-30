@@ -30,6 +30,15 @@
     <None Update="Image\QRCode.PNG">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Merge\1.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Merge\2.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Merge\FirstDoc.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Pdf\PdfMergeTemplate.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
