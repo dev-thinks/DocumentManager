@@ -19,7 +19,7 @@ namespace DocumentManager.Tests.Watermark
                 IsWaterMarkNeeded = true
             };
 
-            executor.Convert("WaterMark\\WaterMarkTemplate.docx", "WithWaterMark.docx", placeholders);
+            executor.Convert("WaterMark\\WaterMarkTemplate.docx", "WithWaterMark.pdf", placeholders);
 
             //executor.RemoveWaterMark("WithWaterMark.docx", "WithOutWaterMark.docx");
         }

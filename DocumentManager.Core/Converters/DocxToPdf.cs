@@ -52,7 +52,7 @@ namespace DocumentManager.Core.Converters
             }
             finally
             {
-                //Helper.ClearDirectory(rep.WorkingLocation);
+                Helper.ClearDirectory(rep.WorkingLocation);
             }
         }
     }
