@@ -27,5 +27,5 @@ Report from DOCX / HTML to DOCX/PDF Converter can parse the source document and 
 
 
 ## Usage
-Refer unit test cases/examples at [DocumentManager](https://github.com/dev-thinks/DocumentManager/)
+Refer unit test cases/examples at [DocumentManager](https://github.com/dev-thinks/DocumentManager/tree/master/DocumentManager.Tests/)
 ✨Magic ✨
