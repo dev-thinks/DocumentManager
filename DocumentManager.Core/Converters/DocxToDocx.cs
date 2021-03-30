@@ -29,6 +29,13 @@ namespace DocumentManager.Core.Converters
             _logger.LogTrace("Docx to docx Transformation done");
 
             Extensions.WriteMemoryStreamToDisk(ms, target);
+
+            if (rep.IsWaterMarkNeeded)
+            {
+                var options = new WaterMarkOptions { Text = "SAMPLE", WaterMarkFor = FileType.Docx };
+
+                AddWaterMark(target, target, options);
+            }
         }
 
         /// <summary>

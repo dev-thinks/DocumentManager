@@ -45,6 +45,9 @@
     <None Update="Table\TableTemplate.docx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Watermark\test.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Watermark\WaterMarkTemplate.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

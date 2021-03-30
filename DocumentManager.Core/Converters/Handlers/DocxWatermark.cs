@@ -7,6 +7,7 @@ using DocumentManager.Core.Models;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Linq;
+using DocumentFormat.OpenXml;
 
 namespace DocumentManager.Core.Converters.Handlers
 {
@@ -38,12 +39,14 @@ namespace DocumentManager.Core.Converters.Handlers
                 {
                     _logger.LogTrace("Adding watermark text using: {WaterMarkImage}, {@Options}", waterMarkImagePath, _options);
 
-                    AddWatermarkText(doc);
-                }
-                else
-                {
-                    _logger.LogTrace("Adding image watermark using: {WaterMarkImage}", waterMarkImagePath);
-                    // TODO: Image watermark
+                    if (_options.WaterMarkFor == FileType.Docx || _options.WaterMarkFor == FileType.Doc)
+                    {
+                        AddDocxWatermarkText(doc);
+                    }
+                    else
+                    {
+                        AddPdfWatermarkText(doc);
+                    }
                 }
             }
 
@@ -82,7 +85,42 @@ namespace DocumentManager.Core.Converters.Handlers
             return _docxMs;
         }
 
-        private void AddWatermarkText(WordprocessingDocument doc)
+        private void AddPdfWatermarkText(WordprocessingDocument doc)
+        {
+            if (!doc.MainDocumentPart.HeaderParts.Any())
+            {
+                doc.MainDocumentPart.DeleteParts(doc.MainDocumentPart.HeaderParts);
+
+                HeaderPart headerPart1 = doc.MainDocumentPart.AddNewPart<HeaderPart>("rId7");
+                OpenXmlDocxRef.GenerateHeaderPartContent(headerPart1, _options, WaterMarkTypeId);
+
+                SectionProperties sectionProperties1 = new SectionProperties();
+                HeaderReference headerReference1 = new HeaderReference()
+                    {Type = HeaderFooterValues.Default, Id = "rId7"};
+                SectionType sectionType1 = new SectionType() {Val = SectionMarkValues.NextPage};
+                PageSize pageSize1 = new PageSize() {Width = (UInt32Value) 12240U, Height = (UInt32Value) 15840U};
+                PageMargin pageMargin1 = new PageMargin()
+                {
+                    Top = 1417, Right = (UInt32Value) 1134U, Bottom = 1134, Left = (UInt32Value) 1134U,
+                    Header = (UInt32Value) 1134U, Footer = (UInt32Value) 0U, Gutter = (UInt32Value) 0U
+                };
+                PageNumberType pageNumberType1 = new PageNumberType() {Format = NumberFormatValues.Decimal};
+                FormProtection formProtection1 = new FormProtection() {Val = false};
+                TextDirection textDirection1 = new TextDirection() {Val = TextDirectionValues.LefToRightTopToBottom};
+
+                sectionProperties1.Append(headerReference1);
+                sectionProperties1.Append(sectionType1);
+                sectionProperties1.Append(pageSize1);
+                sectionProperties1.Append(pageMargin1);
+                sectionProperties1.Append(pageNumberType1);
+                sectionProperties1.Append(formProtection1);
+                sectionProperties1.Append(textDirection1);
+
+                doc.MainDocumentPart.Document.Body.Append(sectionProperties1);
+            }
+        }
+
+        private void AddDocxWatermarkText(WordprocessingDocument doc)
         {
             if (!doc.MainDocumentPart.HeaderParts.Any())
             {

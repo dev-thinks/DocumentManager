@@ -9,6 +9,7 @@
             ElementFontFamily = "font-family:\"Calibri\";font-size:1pt";
             Text = "CONFIDENTIAL";
             Opacity = ".5";
+            WaterMarkFor = FileType.Docx;
             ElementStyle = "position:absolute;margin-left:0;margin-top:0;width:527.85pt;height:131.95pt;rotation:315;z-index:-251657216;mso-position-horizontal:center;mso-position-horizontal-relative:margin;" +
                            "mso-position-vertical:center;mso-position-vertical-relative:margin";
         }
@@ -24,5 +25,7 @@
         public string Position { get; set; }
 
         public string Opacity { get; set; }
+
+        public FileType WaterMarkFor { get; set; }
     }
 }

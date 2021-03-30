@@ -30,7 +30,7 @@ namespace DocumentManager.Core.Converters
                 // adds watermark if requested
                 if (rep.IsWaterMarkNeeded)
                 {
-                    var options = new WaterMarkOptions {Text = "SAMPLE" };
+                    var options = new WaterMarkOptions {Text = "SAMPLE", WaterMarkFor = FileType.Pdf};
 
                     _toDocx.AddWaterMark(tmpDocxFile, tmpDocxFile, options);
                 }
@@ -45,7 +45,7 @@ namespace DocumentManager.Core.Converters
             }
             finally
             {
-                //Helper.ClearDirectory(rep.WorkingLocation);
+                Helper.ClearDirectory(rep.WorkingLocation);
             }
         }
     }
