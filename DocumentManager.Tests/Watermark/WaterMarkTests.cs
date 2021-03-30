@@ -16,7 +16,8 @@ namespace DocumentManager.Tests.Watermark
             
             var placeholders = new Placeholders
             {
-                IsWaterMarkNeeded = true
+                IsWaterMarkNeeded = true,
+                IsStampMarkNeeded = true
             };
 
             executor.Convert("WaterMark\\WaterMarkTemplate.docx", "WithWaterMark.pdf", placeholders);

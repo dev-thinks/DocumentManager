@@ -1,4 +1,5 @@
 ﻿// ReSharper disable PossiblyMistakenUseOfParamsMethod
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Vml;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -7,7 +8,6 @@ using DocumentManager.Core.Models;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Linq;
-using DocumentFormat.OpenXml;
 
 namespace DocumentManager.Core.Converters.Handlers
 {
@@ -31,13 +31,13 @@ namespace DocumentManager.Core.Converters.Handlers
             }
         }
 
-        internal MemoryStream Do(string waterMarkImagePath = "")
+        internal MemoryStream Do()
         {
             using (WordprocessingDocument doc = WordprocessingDocument.Open(_docxMs, true))
             {
-                if (string.IsNullOrEmpty(waterMarkImagePath))
+                if (!string.IsNullOrEmpty(_options.Text))
                 {
-                    _logger.LogTrace("Adding watermark text using: {WaterMarkImage}, {@Options}", waterMarkImagePath, _options);
+                    _logger.LogTrace("Adding watermark text using: {@Options}", _options);
 
                     if (_options.WaterMarkFor == FileType.Docx || _options.WaterMarkFor == FileType.Doc)
                     {

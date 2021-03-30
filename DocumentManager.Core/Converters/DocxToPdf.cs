@@ -30,7 +30,11 @@ namespace DocumentManager.Core.Converters
                 // adds stamp mark if requested
                 if (rep.IsStampMarkNeeded)
                 {
-                    var ms2 = new DocxStamp().Create(tmpDocxFile);
+                    var options = new StampMarkOptions(rep.StampMarkText);
+
+                    var stampDoc = new DocxStamp(tmpDocxFile, _logger, options);
+                    var ms2 = stampDoc.Do();
+
                     Extensions.WriteMemoryStreamToDisk(ms2, tmpDocxFile);
                 }
 
